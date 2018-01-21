@@ -2,17 +2,18 @@
     'use strict';
 
     function onload () {
+        const containerElement = document.querySelector('div#container');
         const sunsetElement = document.querySelector('img#sunset');
         const sunriseElement = document.querySelector('img#sunrise');
 
         sunsetElement.addEventListener('click', function () {
-            document.body.className = 'night';
+            containerElement.className = 'night';
             sunriseElement.style.display = '';
             sunsetElement.style.display = 'none';
         });
 
         sunriseElement.addEventListener('click', function () {
-            document.body.className = 'day';
+            containerElement.className = 'day';
             sunsetElement.style.display = '';
             sunriseElement.style.display = 'none';
         });
