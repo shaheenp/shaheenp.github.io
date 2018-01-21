@@ -5,6 +5,8 @@ html {
 
 body {
     margin: 0px;
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-weight: 300;
 }
 
 body.day #header {
@@ -53,9 +55,9 @@ body > div {
     display: block;
     top: 0px;
     z-index: 9999;
-    height: 16px;
-    font-size: 16px;
-    font-weight: 600;
+    height: 18px;
+    font-size: 18px;
+    font-weight: 700;
     padding: 10px;
 }
 
@@ -114,4 +116,23 @@ img#sunset, img#sunrise {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+/* open-sans-condensed-300 - latin */
+@font-face {
+  font-family: 'Open Sans Condensed';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Open Sans Condensed Light'), local('OpenSansCondensed-Light'),
+       url('../fonts/open-sans-condensed-v12-latin-300.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('../fonts/open-sans-condensed-v12-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* open-sans-condensed-700 - latin */
+@font-face {
+  font-family: 'Open Sans Condensed';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Open Sans Condensed Bold'), local('OpenSansCondensed-Bold'),
+       url('../fonts/open-sans-condensed-v12-latin-700.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('../fonts/open-sans-condensed-v12-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
