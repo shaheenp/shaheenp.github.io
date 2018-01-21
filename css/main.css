@@ -25,6 +25,16 @@ body.night {
     padding: 10px;
 }
 
+#header.day {
+    background-color: #404040;
+    color: #d5c4a1;
+}
+
+#header.night {
+    background-color: #303030;
+    color: #d5c4a1;
+}
+
 .header-left {
     display: inline-block;
     float: left;

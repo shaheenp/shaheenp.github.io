@@ -6,13 +6,17 @@
         const sunriseElement = document.querySelector('img#sunrise');
 
         sunsetElement.addEventListener('click', function () {
-            document.body.className = 'night';
+            document.querySelectorAll('.day').forEach(element => {
+                element.className = 'night';
+            });
             sunriseElement.style.display = '';
             sunsetElement.style.display = 'none';
         });
 
         sunriseElement.addEventListener('click', function () {
-            document.body.className = 'day';
+            document.querySelectorAll('.night').forEach(element => {
+                element.className = 'day';
+            });
             sunsetElement.style.display = '';
             sunriseElement.style.display = 'none';
         });
