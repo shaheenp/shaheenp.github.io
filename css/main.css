@@ -1,0 +1,61 @@
+html, body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body.day {
+    background-color: #d5c4a1;
+    color: #202020;
+}
+
+body.night {
+    background-color: #404040;
+    color: #d5c4a1;
+}
+
+#header {
+    display: block;
+    top: 0px;
+    height: 32px;
+    font-size: 24px;
+    font-weight: 600;
+    padding: 10px;
+}
+
+.header-left {
+    display: inline-block;
+    float: left;
+}
+
+#content {
+    display: block;
+    padding: 10px;
+    min-height: 500px;
+}
+
+#footer {
+    display: block;
+    height: 24px;
+    padding: 10px;
+    bottom: 0px;
+}
+
+.footer-right {
+    display: inline-block;
+    float: right;
+}
+
+img#sunset, img#sunrise {
+    cursor: pointer;
+}
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
