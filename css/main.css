@@ -1,38 +1,62 @@
-html, body {
-    margin: 0px;
-    padding: 0px;
+html {
     height: 100%;
     width: 100%;
-    overflow-x: hidden;
 }
 
-body.day {
-    background-color: #d5c4a1;
-    color: #202020;
+body {
+    margin: 0px;
 }
 
-body.night {
+body.day #header {
+    background-color: #83a598;
+    color: #282828;
+}
+
+body.night #header {
+    background-color: #282828;
+    color: #83a598;
+}
+
+body.day #content {
+    background-color: #f9f5d7;
+    color: #282828;
+}
+
+body.night #content {
     background-color: #404040;
+    color: #fbf1c7;
+}
+
+body.day #footer {
+    background-color: #ebdbb2;
+    color: #282828;
+}
+
+body.night #footer {
+    background-color: #303030;
     color: #d5c4a1;
+}
+
+body > div {
+    width: 90%;
+    margin: 10px auto;
+}
+
+@media only screen and (max-width: 750px) {
+    body > div {
+        width: 100%;
+        margin: 0px;
+    }
 }
 
 #header {
     display: block;
     top: 0px;
-    height: 32px;
-    font-size: 24px;
+    z-index: 9999;
+    height: 16px;
+    font-size: 16px;
     font-weight: 600;
     padding: 10px;
-}
-
-#header.day {
-    background-color: #404040;
-    color: #d5c4a1;
-}
-
-#header.night {
-    background-color: #303030;
-    color: #d5c4a1;
 }
 
 .header-left {
@@ -44,13 +68,34 @@ body.night {
     display: block;
     padding: 10px;
     min-height: 500px;
+    font-size: 14px;
 }
 
 #footer {
     display: block;
     height: 100px;
     padding: 10px;
-    bottom: 0px;
+}
+
+.footer-left {
+    display: inline-block;
+    float: left;
+}
+
+ul#social {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+}
+
+li.social-link {
+    float: left;
+    padding-right: 8px;
+}
+
+li.social-link img {
+    height: 32px;
 }
 
 .footer-right {
@@ -59,6 +104,7 @@ body.night {
 }
 
 img#sunset, img#sunrise {
+    width: 40px;
     cursor: pointer;
 }
 
