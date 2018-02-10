@@ -44,9 +44,10 @@ nav {
 }
 
 div.navbar {
+    max-width: 100%;
     width: 1170px;
-    margin: auto;
     height: 100%;
+    margin: auto;
 }
 
 div.nav-left, div.nav-right {
