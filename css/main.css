@@ -14,12 +14,6 @@ body.night {
     color: #d5c4a1;
 }
 
-body.night > nav {
-    background-color: #1e1e1e;
-    border-color: #181818;
-    color: #d5c4a1;
-}
-
 nav {
     top: 0px;
     z-index: 9999;
@@ -28,7 +22,12 @@ nav {
     padding: 6px;
     background-color: #F8F8F8;
     border-bottom: 1px solid #e7e7e7;
-    color: #000000;
+}
+
+body.night > nav {
+    background-color: #1e1e1e;
+    border-color: #181818;
+    color: #d5c4a1;
 }
 
 div.navbar {
@@ -56,18 +55,21 @@ div[class^="nav"] > span {
 }
 
 a {
-    color: inherit;
+    color: #00000099;
     text-decoration: none;
-    opacity: .6;
 }
 
-a[href=""] {
+body.night a {
+    color: #d5c4a199;
+}
+
+body.night a[href=""], a[href=""] {
+    color: inherit;
     font-weight: 400;
-    opacity: 1;
 }
 
-a:hover {
-    opacity: 1;
+body.night a:hover, a:hover {
+    color: inherit;
 }
 
 img.social {
