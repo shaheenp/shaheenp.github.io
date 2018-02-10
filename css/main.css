@@ -58,10 +58,16 @@ div[class^="nav"] > span {
 a {
     color: inherit;
     text-decoration: none;
+    opacity: .6;
+}
+
+a[href=""] {
+    font-weight: 400;
+    opacity: 1;
 }
 
 a:hover {
-    border-bottom: 1px solid rgba(34, 34, 34, .6);
+    opacity: 1;
 }
 
 img.social {
