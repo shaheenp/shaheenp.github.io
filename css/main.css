@@ -31,15 +31,15 @@ nav {
     color: #000000;
 }
 
-@media (max-width: 992px) {
-    nav > div.navbar {
-        width: 750px;
-    }
-}
-
 @media (max-width: 1200px) {
     nav > div.navbar {
         width: 970px;
+    }
+}
+
+@media (max-width: 992px) {
+    nav > div.navbar {
+        width: 750px;
     }
 }
 
