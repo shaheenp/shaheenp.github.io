@@ -91,7 +91,7 @@ main {
 }
 
 img#sunset, img#sunrise {
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     right: 20px;
     width: 30px;
