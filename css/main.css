@@ -7,6 +7,7 @@ body {
     margin: 0px;
     font-family: 'Open Sans', sans-serif;
     font-weight: 300;
+    font-size: 16px;
 }
 
 body.night {
@@ -17,7 +18,7 @@ body.night {
 nav {
     top: 0px;
     z-index: 9999;
-    height: 30px;
+    height: 40px;
     font-size: 18px;
     padding: 6px;
     background-color: #F8F8F8;
@@ -33,24 +34,13 @@ body.night > nav {
 div.navbar {
     max-width: 100%;
     width: 1170px;
-    height: 100%;
+    line-height: 40px;
     margin: auto;
+    display: flex;
+    justify-content: space-between;
 }
 
-div.nav-left, div.nav-right {
-    display: inline-block;
-    height: 100%;
-}
-
-div.nav-left {
-    line-height: 30px;
-}
-
-div.nav-right {
-    float: right;
-}
-
-div[class^="nav"] > span {
+div.nav-right > span, div.nav-left > span {
     padding: 0 15px;
 }
 
@@ -73,17 +63,15 @@ body.night a:hover, a:hover {
 }
 
 img.social {
-    height: 20px;
+    height: 24px;
     vertical-align: middle;
-    cursor: pointer;
 }
 
 main {
-    display: block;
-    min-height: 200px;
-    font-size: 16px;
-    text-align: center;
-    padding: 10px 100px;
+    max-width: 100%;
+    width: 1170px;
+    padding: 20px 0px;
+    margin: auto;
 }
 
 img#sunset, img#sunrise {
@@ -108,12 +96,17 @@ img#sunset, img#sunrise {
     }
 
     main {
-        padding: 10px 50px;
+        width: 970px;
     }
 }
 
 @media only screen and (max-width: 992px) {
     nav > div.navbar {
+        width: 750px;
+    }
+
+    main {
+        max-width: calc(100% - 100px);
         width: 750px;
     }
 }
