@@ -6,23 +6,33 @@
         const sunriseElement = document.querySelector('img#sunrise');
         const socialElements = Array.from(document.querySelectorAll('img.social'));
 
-        sunsetElement.addEventListener('click', () => {
+        function sunset () {
             document.body.classList.add('night');
+            window.localStorage.setItem('night', 'true');
             sunsetElement.style.display = 'none';
             sunriseElement.style.display = '';
             socialElements.forEach(img => {
                 img.style.display = img.classList.contains('social-night') ? '' : 'none';
             });
-        });
+        }
 
-        sunriseElement.addEventListener('click', () => {
+        sunsetElement.addEventListener('click', sunset);
+
+        function sunrise () {
             document.body.classList.remove('night');
+            window.localStorage.removeItem('night');
             sunsetElement.style.display = '';
             sunriseElement.style.display = 'none';
             socialElements.forEach(img => {
                 img.style.display = img.classList.contains('social-night') ? 'none' : '';
             });
-        });
+        }
+
+        sunriseElement.addEventListener('click', sunrise);
+
+        if (window.localStorage.getItem('night')) {
+            sunset();
+        }
     }
 
     document.addEventListener('DOMContentLoaded', onload);
