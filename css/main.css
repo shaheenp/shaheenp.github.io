@@ -5,106 +5,95 @@ html, body {
 
 body {
     margin: 0px;
-    font-family: 'Open Sans Condensed', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-weight: 300;
 }
 
-#container {
-    height: 100%;
-}
-
-#container.day {
-    background-color: #ebdbb2;
-}
-
-#container.night {
-    background-color: #303030;
-}
-
-#container.day > #header {
-    background-color: #83a598;
-    color: #282828;
-}
-
-#container.night > #header {
-    background-color: #282828;
-    color: #83a598;
-}
-
-#header {
-    display: block;
-    top: 0px;
-    z-index: 9999;
-    height: 24px;
-    font-size: 18px;
-    font-weight: 700;
-    padding: 6px;
-}
-
-#header > .header-left {
-    display: inline-block;
-}
-
-#container.day > #content {
-    background-color: #f9f5d7;
-    color: #282828;
-}
-
-#container.night > #content {
-    background-color: #404040;
-    color: #fbf1c7;
-}
-
-#content {
-    display: block;
-    padding: 10px;
-    min-height: 500px;
-    font-size: 14px;
-}
-
-#container.day > #footer {
-    background-color: #ebdbb2;
-    color: #282828;
-}
-
-#container.night > #footer {
-    background-color: #303030;
+body.night {
+    background-color: #202020;
     color: #d5c4a1;
 }
 
-#footer {
-    display: block;
-    height: 100px;
-    padding: 10px;
+body.night > nav {
+    background-color: #1e1e1e;
+    border-color: #181818;
+    color: #d5c4a1;
 }
 
-.footer-left {
+nav {
+    top: 0px;
+    z-index: 9999;
+    height: 30px;
+    font-size: 18px;
+    padding: 6px;
+    background-color: #F8F8F8;
+    border-bottom: 1px solid #e7e7e7;
+    color: #000000;
+}
+
+@media (max-width: 992px) {
+    nav > div.navbar {
+        width: 750px;
+    }
+}
+
+@media (max-width: 1200px) {
+    nav > div.navbar {
+        width: 970px;
+    }
+}
+
+div.navbar {
+    width: 1170px;
+    margin: auto;
+    height: 100%;
+}
+
+div.nav-left, div.nav-right {
     display: inline-block;
+    height: 100%;
 }
 
-ul#social {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-    overflow: hidden;
+div.nav-left {
+    line-height: 30px;
 }
 
-li.social-link {
-    float: left;
-    padding-right: 8px;
-}
-
-li.social-link img {
-    height: 32px;
-}
-
-.footer-right {
-    display: inline-block;
+div.nav-right {
     float: right;
 }
 
+div[class^="nav"] > span {
+    padding: 0 15px;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    border-bottom: 1px solid rgba(34, 34, 34, .6);
+}
+
+img.social {
+    height: 20px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+main {
+    display: block;
+    min-height: 200px;
+    font-size: 16px;
+    text-align: center;
+    padding: 10px 100px;
+}
+
 img#sunset, img#sunrise {
-    width: 40px;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 30px;
     cursor: pointer;
 }
 
@@ -116,21 +105,21 @@ img#sunset, img#sunrise {
     user-select: none;
 }
 
-/* open-sans-condensed-300 - latin */
+/* open-sans-300 - latin */
 @font-face {
-  font-family: 'Open Sans Condensed';
+  font-family: 'Open Sans';
   font-style: normal;
   font-weight: 300;
-  src: local('Open Sans Condensed Light'), local('OpenSansCondensed-Light'),
-       url('../fonts/open-sans-condensed-v12-latin-300.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('../fonts/open-sans-condensed-v12-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  src: local('Open Sans Light'), local('OpenSans-Light'),
+       url('../fonts/open-sans-v15-latin-300.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('../fonts/open-sans-v15-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
-/* open-sans-condensed-700 - latin */
+/* open-sans-regular - latin */
 @font-face {
-  font-family: 'Open Sans Condensed';
+  font-family: 'Open Sans';
   font-style: normal;
-  font-weight: 700;
-  src: local('Open Sans Condensed Bold'), local('OpenSansCondensed-Bold'),
-       url('../fonts/open-sans-condensed-v12-latin-700.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('../fonts/open-sans-condensed-v12-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  font-weight: 400;
+  src: local('Open Sans Regular'), local('OpenSans-Regular'),
+       url('../fonts/open-sans-v15-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url('../fonts/open-sans-v15-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
