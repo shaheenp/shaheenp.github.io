@@ -3,4 +3,13 @@ layout: home
 title: Shaheen Page
 ---
 
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla id lectus a odio facilisis bibendum. Vivamus quis pretium metus. Donec fringilla sapien vitae neque suscipit, quis rutrum nulla fermentum. Aenean leo mauris, luctus sit amet hendrerit non, egestas at metus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus placerat egestas nisi, sit amet varius nulla ullamcorper ut. Nunc tempor felis in enim semper placerat. Etiam mauris sem, porta sed lacus sed, dictum vehicula enim. Aenean gravida gravida accumsan. Fusce massa ipsum, venenatis a eros et, eleifend bibendum purus. Proin vulputate elit ut arcu volutpat commodo. Sed dignissim vulputate pretium. Integer condimentum, orci vitae suscipit fermentum, ex orci ultricies risus, non commodo felis ligula id lorem.</p>
+<div id="title">Posts</div>
+<ul class="posts">
+    {% for post in site.posts %}
+        <li>
+            <i>{{ post.date | date_to_string }}</i>
+            |
+            <a href="{{ post.url }}">{{ post.title }}</a>
+        </li>
+    {% endfor %}
+</ul>

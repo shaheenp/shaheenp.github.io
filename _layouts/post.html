@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en-us">
+{% include head.html %}
+<body>
+    {% include nav.html %}
+    <main>
+        <div id="title">{{ page.title }}</div>
+        <div id="post-body">
+            {{ content }}
+        </div>
+    </main>
+    {% include footer.html %}
+</body>
+</html>

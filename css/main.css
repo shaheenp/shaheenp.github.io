@@ -78,9 +78,25 @@ main {
     margin: auto;
 }
 
-div#error {
+#title {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #20202020;
+}
+
+body.night #title {
+    border-color: #fbf1c710;
+}
+
+#title.error {
     text-align: center;
-    font-size: 36px;
+    border-bottom: none;
+}
+
+ul.posts {
+    list-style-type: none;
 }
 
 img#sunset, img#sunrise {
