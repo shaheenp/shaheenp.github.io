@@ -115,7 +115,7 @@ img#sunrise {
     }
 
     main {
-        max-width: calc(100% - 100px);
+        max-width: calc(100% - 150px);
         width: 750px;
     }
 }
