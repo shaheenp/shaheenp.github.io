@@ -3,13 +3,15 @@ layout: default
 title: Shaheen Page
 ---
 
-<div id="title">Posts</div>
+<div id="header" class="posts-header">Posts</div>
 <ul class="posts">
     {% for post in site.posts %}
-        <li>
-            <i>{{ post.date | date_to_string }}</i>
-            |
-            <a href="{{ post.url }}">{{ post.title }}</a>
+        <li class="post">
+            <span class="post-date">
+                <i>{{ post.date | date_to_string }}</i>
+                |
+            </span>
+            <a class="post-title" href="{{ post.url }}">{{ post.title }}</a>
         </li>
     {% endfor %}
 </ul>

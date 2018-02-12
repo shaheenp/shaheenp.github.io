@@ -4,7 +4,10 @@
 <body>
     {% include nav.html %}
     <main>
-        <div id="title">{{ page.title }}</div>
+        <div id="header" class="post-header">
+            <span id="post-title">{{ page.title }}</span>
+            <span id="post-date">{{ page.date | date_to_long_string }}</span>
+        </div>
         <div id="post-body">
             {{ content }}
         </div>

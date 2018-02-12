@@ -1,17 +1,18 @@
-* {
-    margin: 0px;
-    padding: 0px;
-}
+/***********
+* default  *
+***********/
 
 html, body {
     height: 100%;
     width: 100%;
+    margin: 0px;
+    padding: 0px;
 }
 
 body {
     font-family: 'Open Sans', sans-serif;
     font-weight: 300;
-    font-size: 16px;
+    font-size: 1em;
 }
 
 body.night {
@@ -23,7 +24,7 @@ nav {
     top: 0px;
     z-index: 9999;
     height: 40px;
-    font-size: 18px;
+    font-size: 120%;
     padding: 6px;
     background-color: #F8F8F8;
     border-bottom: 1px solid #e7e7e7;
@@ -44,7 +45,8 @@ div.navbar {
     justify-content: space-between;
 }
 
-div.nav-right > span, div.nav-left > span {
+div.nav-left > span,
+div.nav-right > span {
     padding: 0 15px;
 }
 
@@ -65,28 +67,19 @@ main {
     margin: auto;
 }
 
-#title {
-    font-size: 24px;
-    font-weight: 400;
-    margin-bottom: 15px;
+#header {
+    font-size: 110%;
+    margin-bottom: 20px;
     padding-bottom: 5px;
     border-bottom: 1px solid #20202020;
 }
 
-body.night #title {
-    border-color: #fbf1c710;
+body.night #header {
+    border-color: #fbf1c720;
 }
 
-#title.error {
-    text-align: center;
-    border-bottom: none;
-}
-
-ul.posts {
-    list-style-type: none;
-}
-
-img#sunset, img#sunrise {
+img#sunset,
+img#sunrise {
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -140,4 +133,54 @@ img#sunset, img#sunrise {
   src: local('Open Sans Regular'), local('OpenSans-Regular'),
        url('../fonts/open-sans-v15-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
        url('../fonts/open-sans-v15-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/***********
+*** home ***
+***********/
+
+#header.posts-header {
+    display: inline-block;
+    padding-right: 100px;
+}
+
+.post-date {
+    color: #00000080;
+}
+
+body.night .post-date {
+    color: #d5c4a180;
+}
+
+ul.posts {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+
+/***********
+*** post ***
+***********/
+
+#header.post-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+#post-date {
+    color: #00000080;
+}
+
+body.night #post-date {
+    color: #d5c4a180;
+}
+
+/***********
+** error  **
+***********/
+
+#header.error {
+    font-size: 120%;
+    text-align: center;
+    border: none;
 }
