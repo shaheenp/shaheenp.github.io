@@ -1,12 +1,27 @@
 (function () {
     'use strict';
 
-    function onload () {
-        const sunsetElement = document.querySelector('img#sunset');
-        const sunriseElement = document.querySelector('img#sunrise');
-        const socialElements = Array.from(document.querySelectorAll('img.social'));
+    class Page {
+        constructor() {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        }
 
-        function sunset () {
+        init() {
+            this.sunsetElement = document.querySelector('img#sunset');
+            this.sunriseElement = document.querySelector('img#sunrise');
+            this.socialElements = Array.from(document.querySelectorAll('img.social'));
+
+            this.sunsetElement.addEventListener('click', () => this.sunset());
+            this.sunriseElement.addEventListener('click', () => this.sunrise());
+
+            if (window.localStorage.getItem('night')) {
+                this.sunset();
+            }
+        }
+
+        sunset() {
+            const {sunsetElement, sunriseElement, socialElements} = this;
+
             document.body.classList.add('night');
             window.localStorage.setItem('night', 'true');
             sunsetElement.style.display = 'none';
@@ -16,9 +31,9 @@
             });
         }
 
-        sunsetElement.addEventListener('click', sunset);
+        sunrise() {
+            const {sunsetElement, sunriseElement, socialElements} = this;
 
-        function sunrise () {
             document.body.classList.remove('night');
             window.localStorage.removeItem('night');
             sunsetElement.style.display = '';
@@ -27,13 +42,7 @@
                 img.style.display = img.classList.contains('social-night') ? 'none' : '';
             });
         }
-
-        sunriseElement.addEventListener('click', sunrise);
-
-        if (window.localStorage.getItem('night')) {
-            sunset();
-        }
     }
 
-    document.addEventListener('DOMContentLoaded', onload);
+    new Page();
 })();
