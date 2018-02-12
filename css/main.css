@@ -10,9 +10,13 @@ html, body {
 }
 
 body {
-    font-family: 'Roboto Mono', monospace;
     font-weight: 300;
     font-size: .875em;
+}
+
+body,
+body * {
+    font-family: 'Roboto Mono', monospace;
 }
 
 body.night {
