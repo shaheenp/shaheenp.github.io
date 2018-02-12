@@ -53,14 +53,6 @@ a {
     text-decoration: none;
 }
 
-a:hover {
-    color: #00000099;
-}
-
-body.night a:hover {
-    color: #d5c4a199;
-}
-
 img.social {
     height: 24px;
     vertical-align: middle;
