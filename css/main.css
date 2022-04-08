@@ -16,7 +16,7 @@ body {
 
 body,
 body * {
-    font-family: 'Roboto Mono', monospace;
+    font-family: Roboto Mono, Menlo, Courier, monospace;
 }
 
 body.night {
@@ -49,8 +49,7 @@ div.navbar {
     justify-content: space-between;
 }
 
-div.nav-left > span,
-div.nav-right > span {
+div.nav-left > span {
     padding: 0 15px;
 }
 
