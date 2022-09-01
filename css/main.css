@@ -37,10 +37,10 @@ body {
     position: absolute;
     left: calc( 45% + 40px );
     top: 10%;
-    padding: 15px 25px;
+    padding: 15px 20px;
     gap: 15px;
-    background: #eee;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    background: #fffd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     border-radius: 5px;
 }
 
@@ -60,6 +60,7 @@ body {
     font-size: 14px;
     padding: 0;
     margin: 0;
+    margin-top: 5px;
     color: #777;
 }
 
@@ -92,8 +93,26 @@ body {
     content: attr(data-miles) ' miles';
 }
 
-.status-value.days:before {
+.status-value.miles[data-miles][data-miles-since]:before {
+    content: '~ ' attr(data-miles) ' miles';
+}
+
+.status-value.days[data-days]:before {
     content: attr(data-days) ' days';
+}
+
+
+.info {
+    display: block;
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    font-size: 14px;
+    color: #000;
+    mix-blend-mode: soft-light;
+}
+.info-last-update:after {
+    content: attr(data-last-update);
 }
 
 @media (max-width: 600px) {

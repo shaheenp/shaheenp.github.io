@@ -107,22 +107,37 @@ function setTrailMask(miles) {
 const status = getStatus();
 const statusElements = {
     miles: document.querySelector('.status-value.miles'),
-    days: document.querySelector('.status-value.days')
+    days: document.querySelector('.status-value.days'),
+    lastUpdate: document.querySelector('.info-last-update')
 };
 
 statusElements.days.setAttribute('data-days', status.daysOnTrail.toString());
 statusElements.days.setAttribute('title', `${status.daysOnTrail} on trail (start date: ${status.startDate})`);
 
-statusElements.miles.setAttribute('title', `${status.miles} miles + estimated ${status.milesSinceLastSeen} miles since ${status.lastSeen}`);
 statusElements.miles.setAttribute('data-miles', (status.miles + status.milesSinceLastSeen).toString());
+
+let milesTitle = `${status.miles} miles hiked since ${status.startDate}`;
+
+if (status.milesSinceLastSeen > 0) {
+    statusElements.miles.setAttribute('data-miles-since', status.milesSinceLastSeen.toString());
+    milesTitle = `${status.miles} miles + ~${status.milesSinceLastSeen} miles since ${status.lastSeen}`;
+}
+
+statusElements.miles.setAttribute('title', milesTitle);
+
+statusElements.lastUpdate.setAttribute('data-last-update', status.lastSeen);
 
 let startMiles = 0;
 let endMiles = status.miles + status.milesSinceLastSeen;
 let animateMiles = endMiles - startMiles;
-let start = Date.now();
-let duration = 1000;
+let start;
+let duration = 1500;
 
 function animate() {
+    if (!start) {
+        start = Date.now();
+    }
+
     requestAnimationFrame(() => {
         let now = Date.now();
         let animProgress = Math.min(1, (now - start) / duration);
@@ -139,4 +154,6 @@ function animate() {
 }
 
 setTrailMask(0);
-animate();
+setTimeout(() => {
+    animate();
+}, 200);
