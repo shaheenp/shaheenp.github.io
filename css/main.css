@@ -23,6 +23,7 @@ body {
     overflow: hidden;
     width: 100vw;
     height: 100vh;
+    height: --webkit-fill-available;
     background-image: linear-gradient(90deg, #83aac4 50%, #d4d7d8 50%);
 }
 #pctmap {
@@ -30,7 +31,7 @@ body {
     position: absolute;
     transform: translateX(-45%);
     left: 45%;
-    height: 100vh;
+    height: 100%;
     min-height: 400px;
 }
 #pctmap-status {
