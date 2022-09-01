@@ -8,7 +8,7 @@ function getStatus() {
 
     let startTime = new Date(status.startDate).getTime();
 
-    status.daysOnTrail = Math.floor((NOW - startTime) / DAY);
+    status.daysOnTrail = Math.ceil((NOW - startTime) / DAY);
 
     let lastSeen = new Date(status.lastSeen);
     let daysSinceSeen = Math.max(0, (NOW - DAY - lastSeen) / DAY);
@@ -117,9 +117,10 @@ statusElements.miles.setAttribute('title', `${status.miles} miles + estimated ${
 statusElements.miles.setAttribute('data-miles', (status.miles + status.milesSinceLastSeen).toString());
 
 let startMiles = 0;
-let animateMiles = status.miles - startMiles;
+let endMiles = status.miles + status.milesSinceLastSeen;
+let animateMiles = endMiles - startMiles;
 let start = Date.now();
-let duration = 500;
+let duration = 1000;
 
 function animate() {
     requestAnimationFrame(() => {
@@ -131,6 +132,8 @@ function animate() {
 
         if (animProgress < 1) {
             animate();
+        } else {
+            setTrailMask(endMiles);
         }
     });
 }
