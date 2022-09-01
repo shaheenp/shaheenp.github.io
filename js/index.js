@@ -125,7 +125,10 @@ if (status.milesSinceLastSeen > 0) {
 
 statusElements.miles.setAttribute('title', milesTitle);
 
-statusElements.lastUpdate.setAttribute('data-last-update', status.lastSeen);
+// leave as "Today" if lastSeen is set in the future
+if (new Date(status.lastSeen) < new Date()) {
+    statusElements.lastUpdate.setAttribute('data-last-update', status.lastSeen);
+}
 
 let startMiles = 0;
 let endMiles = status.miles + status.milesSinceLastSeen;
