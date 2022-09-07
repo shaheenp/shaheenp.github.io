@@ -126,7 +126,7 @@ if (status.milesSinceLastSeen > 0) {
 statusElements.miles.setAttribute('title', milesTitle);
 
 // leave as "Today" if lastSeen is set in the future
-if (new Date(status.lastSeen) < new Date()) {
+if (new Date(status.lastSeen) < new Date(new Date().toDateString())) {
     statusElements.lastUpdate.setAttribute('data-last-update', status.lastSeen);
 }
 
