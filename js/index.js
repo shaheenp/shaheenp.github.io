@@ -2,16 +2,20 @@
 
 function getStatus() {
     const DAY = 1000 * 60 * 60 * 24;
-    const NOW = new Date().getTime();
+    const TODAY = new Date(new Date().toDateString());
     const statusScript = document.getElementById('status-data');
-    const status = JSON.parse(statusScript.innerHTML.trim());
+    const status = Object.assign({
+        previousDaysOffTrail: 0
+    }, JSON.parse(statusScript.innerHTML.trim()));
 
-    let startTime = new Date(status.startDate).getTime();
+    let trailStart = new Date(status.startDate).getTime();
+    let lastOnTrail = new Date(status.offTrailSince || TODAY);
 
-    status.daysOnTrail = Math.ceil((NOW - startTime) / DAY);
+    status.daysOnTrail = Math.ceil((lastOnTrail - trailStart) / DAY) - status.previousDaysOffTrail;
 
     let lastSeen = new Date(status.lastSeen);
-    let daysSinceSeen = Math.max(0, (NOW - DAY - lastSeen) / DAY);
+    let lastHiked = lastOnTrail || TODAY - DAY;
+    let daysSinceSeen = Math.max(0, (lastHiked - lastSeen) / DAY);
 
     status.milesSinceLastSeen = Math.floor(daysSinceSeen * status.dailyMileEstimate);
 
