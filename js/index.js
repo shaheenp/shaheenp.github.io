@@ -1,11 +1,14 @@
 'use strict';
 
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
 function getStatus() {
     const DAY = 1000 * 60 * 60 * 24;
     const TODAY = new Date(new Date().toDateString());
     const statusScript = document.getElementById('status-data');
     const status = Object.assign({
-        previousDaysOffTrail: 0
+        previousDaysOffTrail: 0,
+        skippedMiles: []
     }, JSON.parse(statusScript.innerHTML.trim()));
 
     let trailStart = new Date(status.startDate).getTime();
@@ -17,15 +20,31 @@ function getStatus() {
     let lastHiked = lastOnTrail || TODAY - DAY;
     let daysSinceSeen = Math.max(0, (lastHiked - lastSeen) / DAY);
 
+    status.totalSkippedMiles = status.skippedMiles.reduce(function(sum, [start, end]) {
+        start = Math.min(start, status.mileMarker);
+        end = Math.min(end, status.mileMarker);
+        return sum + end - start;
+    }, 0);
+
+    status.miles = status.mileMarker - status.totalSkippedMiles;
     status.milesSinceLastSeen = Math.floor(daysSinceSeen * status.dailyMileEstimate);
 
     return status;
 }
 
+function createSVGElement(tagName, attributes = {}) {
+    let el = document.createElementNS(SVG_NS, tagName);
+    for (let key in attributes) {
+        el.setAttributeNS(null, key, attributes[key]);
+    }
+    return el;
+}
+
 const PCT_MILES = 2653;
 const trailProgress = document.getElementById('trail-progress');
 const trailMask = document.getElementById('trail-progress-mask');
-const trailCircle = document.getElementById('trail-circle');
+const trailMaskPath = document.getElementById('trail-mask-path');
+const trailMaskEnd = document.getElementById('trail-mask-end');
 
 function pointAtMile(mile=0) {
     let percentOfTrail = Math.min((mile * 1.04) / PCT_MILES, 1);
@@ -35,30 +54,58 @@ function pointAtMile(mile=0) {
     return point;
 }
 
-function setTrailMask(miles, lastState) {
-    lastState = lastState || {miles: 0, points: []};
+function pointsFromMiles(start, end, increment = 4) {
+    let points = [];
 
-    const endPoint = pointAtMile(miles);
-    let points = lastState.points.slice();
-    let lastMiles = lastState.miles;
-
-    for (let mi = lastMiles; mi < miles; mi += 5) {
+    for (let mi = start; mi < end; mi += increment) {
         const point = pointAtMile(mi);
         points.push(point);
     }
 
-    points.push(endPoint);
+    points.push(pointAtMile(end));
 
-    let pointsString = points.map(p => `${p.x},${p.y}`).join(' ');
+    return points;
+}
 
-    trailMask.firstElementChild.setAttributeNS(null, 'points', pointsString);
-    trailCircle.setAttributeNS(null, 'cx', endPoint.x);
-    trailCircle.setAttributeNS(null, 'cy', endPoint.y);
+function pathFromPoints(points) {
+    return points.map(p => `${p.x},${p.y}`).join(' ');
+}
+
+function setTrailMask(miles, lastState) {
+    lastState = lastState || {miles: 0, points: []};
+
+    let lastMiles = lastState.miles;
+    let newPoints = pointsFromMiles(lastMiles, miles);
+    let points = lastState.points.concat(newPoints);
+
+    let pointsString = pathFromPoints(points);
+    let lastPoint = points[points.length - 1];
+
+    trailMaskPath.setAttributeNS(null, 'points', pointsString);
+    trailMaskEnd.setAttributeNS(null, 'cx', lastPoint.x);
+    trailMaskEnd.setAttributeNS(null, 'cy', lastPoint.y);
 
     return {
         points,
         miles
     };
+}
+
+function markSkippedMiles(start, end) {
+    let points = pointsFromMiles(start, end);
+    let path = pathFromPoints(points);
+    let polyline = createSVGElement('polyline', {
+        points: path,
+        fill: 'none',
+        stroke: 'black',
+        style: 'opacity: 0.6; stroke-width: 16px; stroke-linejoin: round;',
+        mask: 'url(#restore-linecap-mask)'
+    });
+
+    let firstPoint = points[0];
+    let lastPoint = points[points.length - 1];
+
+    trailMask.appendChild(polyline);
 }
 
 const status = getStatus();
@@ -87,11 +134,15 @@ if (new Date(status.lastSeen) < new Date(new Date().toDateString())) {
     statusElements.lastUpdate.setAttribute('data-last-update', status.lastSeen);
 }
 
-let startMiles = 0;
-let endMiles = status.miles + status.milesSinceLastSeen;
-let animateMiles = endMiles - startMiles;
+for (let [start, end] of status.skippedMiles) {
+    markSkippedMiles(start, end);
+}
+
+const startMiles = 0;
+const endMiles = status.mileMarker + status.milesSinceLastSeen;
+const animateMiles = endMiles - startMiles;
+const duration = 2e3;
 let start;
-let duration = 2000;
 
 function animate(fromState) {
     if (!start) {
