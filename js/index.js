@@ -27,85 +27,38 @@ const trailProgress = document.getElementById('trail-progress');
 const trailMask = document.getElementById('trail-progress-mask');
 const trailCircle = document.getElementById('trail-circle');
 
-function calcDistance(p1, p2) {
-    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-}
-
-function milePosition(mile=0) {
-    let percentOfTrail = Math.min(mile / PCT_MILES, 1);
+function pointAtMile(mile=0) {
+    let percentOfTrail = Math.min((mile * 1.04) / PCT_MILES, 1);
     let pathLength = trailProgress.getTotalLength();
-    let rightPercOfPath = (0.511 + (percentOfTrail * 0.491)) % 1;
-    let leftPercOfPath = 0.504 - (percentOfTrail * 0.493);
-    let rightPoint = trailProgress.getPointAtLength(pathLength * rightPercOfPath);
+    let point = trailProgress.getPointAtLength(pathLength * percentOfTrail);
 
-    let leftPointStart = pathLength * leftPercOfPath;
-    let leftPoint = trailProgress.getPointAtLength(leftPointStart);
-    let lastDistance = calcDistance(leftPoint, rightPoint);
-
-    for (let d = 0; d < 50; d += 1) {
-        let point = trailProgress.getPointAtLength(leftPointStart + d);
-        let pointDistance = calcDistance(point, rightPoint);
-
-        if (pointDistance <= lastDistance) {
-            leftPoint = point;
-            lastDistance = pointDistance;
-        } else {
-            break;
-        }
-    }
-
-    for (let d = 0; d > -50; d -= 1) {
-        let point = trailProgress.getPointAtLength(leftPointStart + d);
-        let pointDistance = calcDistance(point, rightPoint);
-
-        if (pointDistance <= lastDistance) {
-            leftPoint = point;
-            lastDistance = pointDistance;
-        } else {
-            break;
-        }
-    }
-
-    return {
-        x1: leftPoint.x,
-        y1: leftPoint.y,
-        x2: rightPoint.x,
-        y2: rightPoint.y,
-        x: (leftPoint.x + rightPoint.x) / 2,
-        y: (leftPoint.y + rightPoint.y) / 2,
-        p1: leftPoint,
-        p2: rightPoint
-    };
+    return point;
 }
 
-function extend(p1, p2, multiplier=1) {
-    let xDiff = (p2.x - p1.x) * multiplier;
-    let yDiff = (p2.y - p1.y) * multiplier;
+function setTrailMask(miles, lastState) {
+    lastState = lastState || {miles: 0, points: []};
 
-    return [
-        {x: p1.x - xDiff, y: p1.y - yDiff},
-        {x: p2.x + xDiff, y: p2.y + yDiff}
-    ];
-}
+    const endPoint = pointAtMile(miles);
+    let points = lastState.points.slice();
+    let lastMiles = lastState.miles;
 
-function setTrailMask(miles) {
-    const {x, y, x1, y1, x2, y2, p1, p2} = milePosition(miles);
-    let [lExt, rExt] = extend(p1, p2, 2);
-    let points = [
-        [0, 0],
-        [2080, 0],
-        [2080, y2],
-        [rExt.x, rExt.y],
-        [x2, y2],
-        [x1, y1],
-        [lExt.x, lExt.y],
-        [0, y1]
-    ];
-    let pointsString = points.map(p => p.join(',')).join(' ');
+    for (let mi = lastMiles; mi < miles; mi += 5) {
+        const point = pointAtMile(mi);
+        points.push(point);
+    }
+
+    points.push(endPoint);
+
+    let pointsString = points.map(p => `${p.x},${p.y}`).join(' ');
 
     trailMask.firstElementChild.setAttributeNS(null, 'points', pointsString);
-    trailCircle.setAttributeNS(null, 'cx', x);
-    trailCircle.setAttributeNS(null, 'cy', y);
+    trailCircle.setAttributeNS(null, 'cx', endPoint.x);
+    trailCircle.setAttributeNS(null, 'cy', endPoint.y);
+
+    return {
+        points,
+        miles
+    };
 }
 
 const status = getStatus();
@@ -138,9 +91,9 @@ let startMiles = 0;
 let endMiles = status.miles + status.milesSinceLastSeen;
 let animateMiles = endMiles - startMiles;
 let start;
-let duration = 1500;
+let duration = 2000;
 
-function animate() {
+function animate(fromState) {
     if (!start) {
         start = Date.now();
     }
@@ -150,12 +103,12 @@ function animate() {
         let animProgress = Math.min(1, (now - start) / duration);
         let miles = startMiles + (animateMiles * animProgress);
 
-        setTrailMask(miles);
+        let maskState = setTrailMask(miles, fromState);
 
         if (animProgress < 1) {
-            animate();
+            animate(maskState);
         } else {
-            setTrailMask(endMiles);
+            setTrailMask(endMiles, fromState);
         }
     });
 }
@@ -163,4 +116,4 @@ function animate() {
 setTrailMask(0);
 setTimeout(() => {
     animate();
-}, 200);
+}, 300);
