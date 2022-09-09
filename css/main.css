@@ -91,18 +91,27 @@ body {
     text-align: right;
 }
 
-.status-value.miles[data-miles]:before {
-    content: attr(data-miles) ' miles';
+.status-value.miles:before,
+.status-value.days:before {
+    content: '\00A0';
+    opacity: 0;
+    transition: opacity .2s;
 }
 
-.status-value.miles[data-miles][data-miles-since]:before {
-    content: '~ ' attr(data-miles) ' miles';
+.status-value.miles[data-miles]:before {
+    content: attr(data-miles) ' miles';
+    opacity: 1;
+}
+
+.status-value.miles[data-miles-estimate]:before {
+    content: '~' attr(data-miles-estimate) ' miles';
+    opacity: 1;
 }
 
 .status-value.days[data-days]:before {
     content: attr(data-days) ' days';
+    opacity: 1;
 }
-
 
 .info {
     display: block;

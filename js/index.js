@@ -118,12 +118,12 @@ const statusElements = {
 statusElements.days.setAttribute('data-days', status.daysOnTrail.toString());
 statusElements.days.setAttribute('title', `${status.daysOnTrail} on trail (start date: ${status.startDate})`);
 
-statusElements.miles.setAttribute('data-miles', (status.miles + status.milesSinceLastSeen).toString());
+statusElements.miles.setAttribute('data-miles', status.miles.toString());
 
 let milesTitle = `${status.miles} miles hiked since ${status.startDate}`;
 
 if (status.milesSinceLastSeen > 0) {
-    statusElements.miles.setAttribute('data-miles-since', status.milesSinceLastSeen.toString());
+    statusElements.miles.setAttribute('data-miles-estimate', (status.miles + status.milesSinceLastSeen).toString());
     milesTitle = `${status.miles} miles + ~${status.milesSinceLastSeen} miles since ${status.lastSeen}`;
 }
 
