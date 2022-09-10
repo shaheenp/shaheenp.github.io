@@ -1,10 +1,10 @@
 'use strict';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+const DAY = 1000 * 60 * 60 * 24;
+const TODAY = new Date(new Date().toDateString());
 
 function getStatus() {
-    const DAY = 1000 * 60 * 60 * 24;
-    const TODAY = new Date(new Date().toDateString());
     const statusScript = document.getElementById('status-data');
     const status = Object.assign({
         previousDaysOffTrail: 0,
@@ -130,7 +130,7 @@ if (status.milesSinceLastSeen > 0) {
 statusElements.miles.setAttribute('title', milesTitle);
 
 // leave as "Today" if lastSeen is set in the future
-if (new Date(status.lastSeen) < new Date(new Date().toDateString())) {
+if (new Date(status.lastSeen) < TODAY) {
     statusElements.lastUpdate.setAttribute('data-last-update', status.lastSeen);
 }
 
