@@ -13,8 +13,8 @@ body {
     cursor: default;
     margin: 0;
     padding: 0;
-    min-height: 100%;
-    height: -webkit-fill-available;
+    height: 100%;
+    max-height: -webkit-fill-available;
     min-width: 320px;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
