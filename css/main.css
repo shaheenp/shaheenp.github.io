@@ -126,6 +126,44 @@ body {
     content: attr(data-last-update);
 }
 
+.legend {
+    margin-top: 25px;
+    color: #888;
+    font-size: 12px;
+    text-align: right;
+}
+
+.legend-item {
+    margin-left: 10px;
+    line-height: 10px;
+    white-space: nowrap;
+}
+
+.legend-item:before {
+    display: inline-block;
+    box-sizing: border-box;
+    content: '';
+    width: 20px;
+    height: 6px;
+    margin-right: 5px;
+    border-radius: 5px;
+    vertical-align: middle;
+}
+
+.legend-item:after {
+    content: attr(data-label);
+    vertical-align: middle;
+}
+
+.legend-item.hiked-miles:before {
+    background: #e16220;
+}
+
+.legend-item.skipped-miles:before {
+    border: 1.5px solid #e16220;
+    background: #eea27f;
+}
+
 @media (max-width: 640px) {
     #pctmap-status {
         left: unset;

@@ -41,6 +41,7 @@ function createSVGElement(tagName, attributes = {}) {
 }
 
 const PCT_MILES = 2653;
+const trailPath = document.getElementById('trail-path');
 const trailProgress = document.getElementById('trail-progress');
 const trailMask = document.getElementById('trail-progress-mask');
 const trailMaskPath = document.getElementById('trail-mask-path');
@@ -48,8 +49,8 @@ const trailMaskEnd = document.getElementById('trail-mask-end');
 
 function pointAtMile(mile=0) {
     let percentOfTrail = Math.min((mile * 1.04) / PCT_MILES, 1);
-    let pathLength = trailProgress.getTotalLength();
-    let point = trailProgress.getPointAtLength(pathLength * percentOfTrail);
+    let pathLength = trailPath.getTotalLength();
+    let point = trailPath.getPointAtLength(pathLength * percentOfTrail);
 
     return point;
 }
@@ -97,15 +98,16 @@ function markSkippedMiles(start, end) {
     let polyline = createSVGElement('polyline', {
         points: path,
         fill: 'none',
-        stroke: 'black',
-        style: 'opacity: 0.6; stroke-width: 16px; stroke-linejoin: round;',
-        mask: 'url(#restore-linecap-mask)'
+        stroke: '#dbab94',
+        style: 'stroke-width: 7px; stroke-linejoin: round; stroke-linecap: round;'
     });
 
     let firstPoint = points[0];
     let lastPoint = points[points.length - 1];
 
-    trailMask.appendChild(polyline);
+    polyline.innerHTML = `<title>Skipped mile ${start} - ${end}</title>`;
+
+    trailProgress.appendChild(polyline);
 }
 
 const status = getStatus();
