@@ -122,6 +122,12 @@ body {
     color: #000;
     mix-blend-mode: soft-light;
 }
+
+.info-item {
+    display: block;
+    margin-top: 8px;
+}
+
 .info-last-update:after {
     content: attr(data-last-update);
 }

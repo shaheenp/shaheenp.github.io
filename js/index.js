@@ -143,7 +143,7 @@ for (let [start, end] of status.skippedMiles) {
 const startMiles = 0;
 const endMiles = status.mileMarker + status.milesSinceLastSeen;
 const animateMiles = endMiles - startMiles;
-const duration = 2e3;
+const duration = Math.floor(animateMiles * 3.5);
 let start;
 
 function animate(fromState) {
@@ -151,9 +151,14 @@ function animate(fromState) {
         start = Date.now();
     }
 
+    function ease(x) {
+        return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+    }
+
     requestAnimationFrame(() => {
         let now = Date.now();
-        let animProgress = Math.min(1, (now - start) / duration);
+        let timeProgress = Math.min(1, (now - start) / duration);
+        let animProgress = ease(timeProgress);
         let miles = startMiles + (animateMiles * animProgress);
 
         let maskState = setTrailMask(miles, fromState);
