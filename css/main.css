@@ -2,14 +2,14 @@
     box-sizing: border-box;
 }
 
-html {
+:root {
     height: 100%;
+    font-size: 16px;
 }
 
 body {
     color: #303030;
     font-family: Helvetica, sans-serif;
-    font-size: 16px;
     cursor: default;
     margin: 0;
     padding: 0;
@@ -51,16 +51,16 @@ body {
 .header {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.3rem;
     border-bottom: 1px solid #ddd;
     text-align: center;
-    padding: 15px 20px;
+    padding: 0.8rem 1.25rem;
     background: #0001;
     border-radius: 10px 10px 0 0;
 }
 
 .header-title {
-    font-size: 16px;
+    font-size: 1rem;
     color: #666;
 }
 
@@ -69,34 +69,34 @@ body {
 }
 
 .header-subtitle {
-    font-size: 13px;
+    font-size: 0.8rem;
     color: #888;
 }
 
 .status {
     display: flex;
     flex-direction: column;
-    padding: 15px 20px;
-    gap: 20px;
+    padding: 1.5rem;
+    gap: 1.5rem;
 }
 
 .status-header {
     flex-grow: 0;
     display: flex;
     justify-content: space-between;
-    gap: 40px;
+    gap: 2.5rem;
 }
 
 .status-main {
     text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0.3rem;
 }
 
 .status-value {
     display: block;
-    font-size: 18px;
+    font-size: 1.2rem;
     margin: 0;
     text-align: center;
 }
@@ -106,8 +106,8 @@ body {
     content: attr(data-label);
     letter-spacing: 0.1px;
     color: #999;
-    font-size: 12px;
-    padding-top: 5px;
+    font-size: 0.75rem;
+    padding-top: 0.3rem;
 }
 
 .status-value:before {
@@ -130,11 +130,11 @@ body {
 }
 
 .status-value.checkpoint {
-    font-size: 24px;
+    font-size: 1.5rem;
 }
 
 .status-value.status-note {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: #999;
 }
 
@@ -143,19 +143,19 @@ body {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 0.6rem;
     background: #0001;
     border-top: 1px solid #ddd;
     color: #888;
-    font-size: 12px;
+    font-size: 0.75rem;
     text-align: center;
-    padding: 10px 15px;
+    padding: 0.625rem 1rem;
     border-radius: 0 0 10px 10px;
 }
 
 .legend-item {
     flex-basis: 20%;
-    line-height: 10px;
+    line-height: 0.75rem;
     white-space: nowrap;
 }
 
@@ -188,8 +188,8 @@ body {
 .info {
     display: block;
     position: absolute;
-    left: 15px;
-    bottom: 15px;
+    left: 16px;
+    bottom: 16px;
     font-size: 14px;
     letter-spacing: 0.3px;
     color: #000;
@@ -205,9 +205,13 @@ body {
     content: attr(data-last-update);
 }
 
+@media (min-width: 800px) {
+    :root {
+        font-size: 20px;
+    }
+}
 
-
-@media (max-width: 560px) {
+@media (max-width: 550px) {
     #pctmap-status {
         left: unset;
         right: 0;
@@ -223,28 +227,24 @@ body {
         border-bottom-right-radius: 0;
     }
 
+    .header,
     .status,
     .legend {
-        padding-right: 40px;
+        padding-right: 2rem;
     }
 }
 
 @media (max-width: 460px) {
-    .status,
-    .legend {
-        padding-right: 30px;
-    }
-
     .status-header {
         flex-direction: column;
         justify-content: center;
-        gap: 20px;
+        gap: 1.25rem;
     }
 }
 
-@media (max-width: 340px) {
-    .header {
-        padding: 10px 15px;
+@media (max-width: 380px), (max-height: 600px) {
+    :root {
+        font-size: 14px;
     }
 
     .header-title.large {
@@ -257,19 +257,5 @@ body {
 
     .header-title.small {
         display: block;
-    }
-
-    .status,
-    .legend {
-        padding-right: 20px;
-    }
-
-    .status {
-        font-size: 16px;
-        padding: 13px 17px;
-    }
-
-    .status-value.checkpoint {
-        font-size: 20px;
     }
 }
