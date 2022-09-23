@@ -211,6 +211,14 @@ function animate(fromState) {
     });
 }
 
+// set svg animation timings
+const animationDuration = `${Math.ceil(duration / 1e3)}s`;
+trailMaskEnd.firstElementChild.setAttribute('begin', animationDuration);
+Array.from(trailMaskEndPulse.children).forEach(animate => {
+    animate.setAttribute('begin', animationDuration);
+});
+
+// animation trail
 setTrailMask(0);
 setTimeout(() => {
     animate();
