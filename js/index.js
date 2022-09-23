@@ -137,14 +137,14 @@ elements.days.dataset.value = status.daysOnTrail.toString();
 elements.days.setAttribute('title', `${status.daysOnTrail} on trail (start date: ${status.startDate})`);
 
 // miles
-elements.miles.dataset.value = status.miles.toString();
+elements.miles.dataset.value = status.miles.toLocaleString();
 
 let milesTitle = `${status.miles} miles hiked since ${status.startDate}`;
 
 if (status.milesSinceLastSeen > 0) {
     elements.miles.dataset.prefix = '~';
-    elements.miles.dataset.value = (status.miles + status.milesSinceLastSeen).toString();
-    milesTitle = `${status.miles} miles + ~${status.milesSinceLastSeen} miles since ${status.lastSeen}`;
+    elements.miles.dataset.value = (status.miles + status.milesSinceLastSeen).toLocaleString();
+    milesTitle = `${status.miles} miles + ~${status.milesSinceLastSeen.toLocaleString()} miles since ${status.lastSeen}`;
 }
 
 elements.miles.setAttribute('title', milesTitle);
