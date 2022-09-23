@@ -32,115 +32,129 @@ body {
     position: absolute;
     transform: translateX(-45%);
     left: 45%;
-    height: 100%;
+    height: 108%;
     min-height: 400px;
 }
+
 #pctmap-status {
     position: absolute;
-    left: calc( 45% + 70px );
+    left: calc( 45% + 60px );
     top: 10%;
+    background: #fff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.02), 0 0 5px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    color: #555;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
     padding: 15px 20px;
-    gap: 15px;
-    background: #fffd;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-    border-radius: 5px;
+    background: #0001;
+    border-radius: 10px 10px 0 0;
 }
 
 .header-title {
-    font-weight: normal;
-    font-size: 28px;
-    padding: 0;
-    margin: 0;
-    color: #555;
+    font-size: 16px;
+    color: #666;
 }
-.header-title.short {
+
+.header-title.small {
     display: none;
 }
 
 .header-subtitle {
-    font-weight: normal;
-    font-size: 14px;
-    padding: 0;
-    margin: 0;
-    margin-top: 5px;
-    color: #777;
+    font-size: 13px;
+    color: #888;
 }
 
-.status-row {
-    margin-top: 20px;
+.status {
+    display: flex;
+    flex-direction: column;
+    padding: 15px 20px;
+    gap: 20px;
 }
 
-.status-label {
-    display: inline-block;
-    font-size: 16px;
-    margin-bottom: 4px;
-    color: #555;
+.status-header {
+    flex-grow: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.status-main {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .status-value {
     display: block;
-    font-size: 28px;
-    margin: 0px 0;
-    color: #e16220;
+    font-size: 18px;
+    margin: 0;
+    text-align: center;
 }
 
-.status-smalltext {
-    display: inline-block;
-    font-size: 14px;
-    color: #888;
-    text-align: right;
+.status-value[data-label]:after {
+    display: block;
+    content: attr(data-label);
+    letter-spacing: 0.1px;
+    color: #999;
+    font-size: 12px;
+    padding-top: 5px;
 }
 
-.status-value.miles:before,
-.status-value.days:before {
+.status-value:before {
     content: '\00A0';
     opacity: 0;
     transition: opacity .2s;
 }
 
-.status-value.miles[data-miles]:before {
-    content: attr(data-miles) ' miles';
+.status-value[data-value]:before {
+    content: attr(data-prefix) attr(data-value) attr(data-suffix);
     opacity: 1;
 }
 
-.status-value.miles[data-miles-estimate]:before {
-    content: '~' attr(data-miles-estimate) ' miles';
-    opacity: 1;
+.status-value.days {
+    color: #777;
 }
 
-.status-value.days[data-days]:before {
-    content: attr(data-days) ' days';
-    opacity: 1;
+.status-value.miles {
+    color: #e16220;
 }
 
-.info {
-    display: block;
-    position: absolute;
-    left: 15px;
-    bottom: 15px;
-    font-size: 14px;
-    color: #000;
-    mix-blend-mode: soft-light;
+.status-value.checkpoint {
+    font-size: 24px;
 }
 
-.info-item {
-    display: block;
-    margin-top: 8px;
-}
-
-.info-last-update:after {
-    content: attr(data-last-update);
+.status-value.status-note {
+    font-size: 12px;
+    color: #999;
 }
 
 .legend {
-    margin-top: 25px;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #0001;
+    border-top: 1px solid #ddd;
     color: #888;
     font-size: 12px;
-    text-align: right;
+    text-align: center;
+    padding: 10px 15px;
+    border-radius: 0 0 10px 10px;
 }
 
 .legend-item {
-    margin-left: 10px;
+    flex-basis: 20%;
     line-height: 10px;
     white-space: nowrap;
 }
@@ -170,29 +184,92 @@ body {
     background: #eea27f;
 }
 
-@media (max-width: 640px) {
+
+.info {
+    display: block;
+    position: absolute;
+    left: 15px;
+    bottom: 15px;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    color: #000;
+    mix-blend-mode: soft-light;
+}
+
+.info-item {
+    display: block;
+    margin-top: 6px;
+}
+
+.info-last-update:after {
+    content: attr(data-last-update);
+}
+
+
+
+@media (max-width: 560px) {
     #pctmap-status {
         left: unset;
         right: 0;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+    }
+
+    .header {
+        border-top-right-radius: 0;
+    }
+
+    .legend {
+        border-bottom-right-radius: 0;
+    }
+
+    .status,
+    .legend {
         padding-right: 40px;
     }
 }
 
-@media (max-width: 420px) {
-    .header-title {
+@media (max-width: 460px) {
+    .status,
+    .legend {
+        padding-right: 30px;
+    }
+
+    .status-header {
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 340px) {
+    .header {
+        padding: 10px 15px;
+    }
+
+    .header-title.large {
         display: none;
     }
-    .header-title.short {
-        display: initial;
+
+    .header-subtitle {
+        display: none;
     }
 
-    .status-label {
-        font-size: 14px;
+    .header-title.small {
+        display: block;
     }
 
-    .status-value {
-        font-size: 26px;
+    .status,
+    .legend {
+        padding-right: 20px;
+    }
+
+    .status {
+        font-size: 16px;
+        padding: 13px 17px;
+    }
+
+    .status-value.checkpoint {
+        font-size: 20px;
     }
 }

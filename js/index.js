@@ -4,6 +4,15 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const DAY = 1000 * 60 * 60 * 24;
 const TODAY = new Date(new Date().toDateString());
 
+const CHECKPOINTS = [
+    [0, "Washington"],
+    [506, "Oregon"],
+    [961, "Northern CA"],
+    [1561, "Sierra Nevada"],
+    [1951, "Southern CA"],
+    [2653, "Complete!"]
+];
+
 function getStatus() {
     const statusScript = document.getElementById('status-data');
     const status = Object.assign({
@@ -14,7 +23,7 @@ function getStatus() {
     let trailStart = new Date(status.startDate).getTime();
     let lastOnTrail = new Date(status.offTrailSince || TODAY);
 
-    status.daysOnTrail = Math.ceil((lastOnTrail - trailStart) / DAY) - status.previousDaysOffTrail;
+    status.daysOnTrail = Math.ceil((TODAY - trailStart + 1) / DAY);
 
     let lastSeen = new Date(status.lastSeen);
     let lastHiked = lastOnTrail || TODAY - DAY;
@@ -28,6 +37,7 @@ function getStatus() {
 
     status.miles = status.mileMarker - status.totalSkippedMiles;
     status.milesSinceLastSeen = Math.floor(daysSinceSeen * status.dailyMileEstimate);
+    status.mileMarkerEstimate = status.mileMarker + status.milesSinceLastSeen;
 
     return status;
 }
@@ -46,6 +56,7 @@ const trailProgress = document.getElementById('trail-progress');
 const trailMask = document.getElementById('trail-progress-mask');
 const trailMaskPath = document.getElementById('trail-mask-path');
 const trailMaskEnd = document.getElementById('trail-mask-end');
+const trailMaskEndPulse = document.getElementById('trail-mask-end-pulse');
 
 function pointAtMile(mile=0) {
     let percentOfTrail = Math.min((mile * 1.04) / PCT_MILES, 1);
@@ -85,6 +96,8 @@ function setTrailMask(miles, lastState) {
     trailMaskPath.setAttributeNS(null, 'points', pointsString);
     trailMaskEnd.setAttributeNS(null, 'cx', lastPoint.x);
     trailMaskEnd.setAttributeNS(null, 'cy', lastPoint.y);
+    trailMaskEndPulse.setAttributeNS(null, 'cx', lastPoint.x);
+    trailMaskEndPulse.setAttributeNS(null, 'cy', lastPoint.y);
 
     return {
         points,
@@ -111,37 +124,64 @@ function markSkippedMiles(start, end) {
 }
 
 const status = getStatus();
-const statusElements = {
+const elements = {
     miles: document.querySelector('.status-value.miles'),
     days: document.querySelector('.status-value.days'),
+    checkpoint: document.querySelector('.status-value.checkpoint'),
+    statusNote: document.querySelector('.status-value.status-note'),
     lastUpdate: document.querySelector('.info-last-update')
 };
 
-statusElements.days.setAttribute('data-days', status.daysOnTrail.toString());
-statusElements.days.setAttribute('title', `${status.daysOnTrail} on trail (start date: ${status.startDate})`);
+// days
+elements.days.dataset.value = status.daysOnTrail.toString();
+elements.days.setAttribute('title', `${status.daysOnTrail} on trail (start date: ${status.startDate})`);
 
-statusElements.miles.setAttribute('data-miles', status.miles.toString());
+// miles
+elements.miles.dataset.value = status.miles.toString();
 
 let milesTitle = `${status.miles} miles hiked since ${status.startDate}`;
 
 if (status.milesSinceLastSeen > 0) {
-    statusElements.miles.setAttribute('data-miles-estimate', (status.miles + status.milesSinceLastSeen).toString());
+    elements.miles.dataset.prefix = '~';
+    elements.miles.dataset.value = (status.miles + status.milesSinceLastSeen).toString();
     milesTitle = `${status.miles} miles + ~${status.milesSinceLastSeen} miles since ${status.lastSeen}`;
 }
 
-statusElements.miles.setAttribute('title', milesTitle);
+elements.miles.setAttribute('title', milesTitle);
 
-// leave as "Today" if lastSeen is set in the future
-if (new Date(status.lastSeen) < TODAY) {
-    statusElements.lastUpdate.setAttribute('data-last-update', status.lastSeen);
+// checkpoint
+let checkpointName = 'PCT';
+let nextCheckpointName;
+let nextCheckpointMile;
+
+for (let [mile, name] of CHECKPOINTS) {
+    if (status.mileMarkerEstimate > mile) {
+        checkpointName = name;
+    } else if (!nextCheckpointName) {
+        nextCheckpointName = name;
+        nextCheckpointMile = mile;
+    }
 }
 
+elements.checkpoint.dataset.value = checkpointName;
+
+if (nextCheckpointName) {
+    elements.statusNote.dataset.value = `${nextCheckpointMile - status.mileMarkerEstimate} mi to ${nextCheckpointName}`;
+}
+
+// info
+// leave as "Today" if lastSeen is set in the future
+if (new Date(status.lastSeen) < TODAY) {
+    elements.lastUpdate.dataset.lastUpdate = status.lastSeen;
+}
+
+// render
 for (let [start, end] of status.skippedMiles) {
     markSkippedMiles(start, end);
 }
 
 const startMiles = 0;
-const endMiles = status.mileMarker + status.milesSinceLastSeen;
+const endMiles = status.mileMarkerEstimate;
 const animateMiles = endMiles - startMiles;
 const duration = Math.floor(animateMiles * 3.5);
 let start;
