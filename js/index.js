@@ -58,10 +58,21 @@ const trailMaskPath = document.getElementById('trail-mask-path');
 const trailMaskEnd = document.getElementById('trail-mask-end');
 const trailMaskEndPulse = document.getElementById('trail-mask-end-pulse');
 
+function scaleToRange(n, scale = [], range = []) {
+    const [start=0, end=1] = scale;
+    const [min=0, max=1] = range;
+    const perc = Math.max(0, Math.min((n - start) / (end - start), 1));
+
+    return min + (perc * (max - min));
+}
+
 function pointAtMile(mile=0) {
-    let percentOfTrail = Math.min((mile * 1.04) / PCT_MILES, 1);
+    let percentOfTrail = mile / PCT_MILES;
+    let adjustmentMultiplier = scaleToRange(percentOfTrail, [0.38, 1], [1.04, 1]);
+    let percentOfTrailAdjusted = percentOfTrail * adjustmentMultiplier;
+
     let pathLength = trailPath.getTotalLength();
-    let point = trailPath.getPointAtLength(pathLength * percentOfTrail);
+    let point = trailPath.getPointAtLength(pathLength * percentOfTrailAdjusted);
 
     return point;
 }
