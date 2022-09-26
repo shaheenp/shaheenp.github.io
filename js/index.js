@@ -182,9 +182,22 @@ if (nextCheckpointName) {
 
 // info
 // leave as "Today" if lastSeen is set in the future
-if (new Date(status.lastSeen) < TODAY) {
-    elements.lastUpdate.dataset.lastUpdate = status.lastSeen;
+let lastSeenString = status.lastSeen;
+let lastSeenDate = new Date(status.lastSeen);
+const YESTERDAY = new Date(TODAY - DAY);
+
+if (lastSeenDate > YESTERDAY) {
+    lastSeenString = 'Today';
+} else if (lastSeenDate >= YESTERDAY) {
+    lastSeenString = 'Yesterday';
+} else if ('Intl' in window) {
+    let formatter = new Intl.DateTimeFormat('en-US', {dateStyle: 'medium'});
+    if (lastSeenDate > TODAY - (DAY * 7)) {
+        formatter = new Intl.DateTimeFormat('en-US', {weekday: 'long'});
+    }
+    lastSeenString = formatter.format(lastSeenDate);
 }
+elements.lastUpdate.dataset.lastUpdate = lastSeenString;
 
 // render
 for (let [start, end] of status.skippedMiles) {
