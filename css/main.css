@@ -135,6 +135,7 @@ body {
 
 .status-value.status-note {
     font-size: 0.75rem;
+    letter-spacing: 0.1px;
     color: #999;
 }
 
@@ -239,6 +240,10 @@ body {
         flex-direction: column;
         justify-content: center;
         gap: 1.25rem;
+    }
+
+    .status-value.checkpoint {
+        font-size: 1.2rem;
     }
 }
 
