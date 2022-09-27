@@ -266,6 +266,16 @@ body {
     .status > :last-child {
         border-bottom-right-radius: 0;
     }
+
+    .info {
+        font-size: 12px;
+        left: 12px;
+        bottom: 12px;
+    }
+
+    .info-item {
+        margin-top: 4px;
+    }
 }
 
 @media (max-width: 460px) {
