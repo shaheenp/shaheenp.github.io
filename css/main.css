@@ -181,7 +181,8 @@ body {
     font-size: 0.75rem;
     text-align: center;
     padding: 0.625rem 1rem;
-    border-radius: 10px 10px;
+    border-radius: 10px;
+    align-self: center;
 }
 
 .legend-item {
@@ -250,10 +251,10 @@ body {
     #pctmap-status {
         left: unset;
         right: 0;
+        top: 5%;
     }
 
-    .status,
-    .legend {
+    .status {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
