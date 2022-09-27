@@ -1,47 +1,52 @@
 'use strict';
 
+// constants
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const DAY = 1000 * 60 * 60 * 24;
 const TODAY = new Date(new Date().toDateString());
+const PCT_MILES = 2653;
+const MS_PER_MILE = 3.5;
 
-const CHECKPOINTS = [
-    [0, "Washington"],
-    [506, "Oregon"],
-    [961, "Northern CA"],
-    [1561, "Sierra Nevada"],
-    [1951, "Southern CA"],
-    [2653, "Complete!"]
-];
 
+// status
 function getStatus() {
     const statusScript = document.getElementById('status-data');
     const status = Object.assign({
-        previousDaysOffTrail: 0,
-        skippedMiles: []
+        "startDate": null,
+        "lastSeen": null,
+        "mileMarker": 0,
+        "dailyMileEstimate": 20,
+        "previousDaysOffTrail": 0,
+        "offTrailSince": null,
+        "skippedMiles": [],
+        "checkpoints": []
     }, JSON.parse(statusScript.innerHTML.trim()));
 
-    let trailStart = new Date(status.startDate).getTime();
-    let lastOnTrail = new Date(status.offTrailSince || TODAY);
+    // make Date's
+    status.startDate = new Date(status.startDate);
+    status.lastSeen = new Date(status.lastSeen);
+    status.offTrailSince = status.offTrailSince && new Date(status.offTrailSince);
 
-    status.daysOnTrail = Math.ceil((TODAY - trailStart + 1) / DAY);
-
-    let lastSeen = new Date(status.lastSeen);
-    let lastHiked = lastOnTrail || TODAY - DAY;
-    let daysSinceSeen = Math.max(0, (lastHiked - lastSeen) / DAY);
-
+    // calc accessible values
+    status.daysOnTrail = Math.ceil((TODAY - status.startDate + 1) / DAY);
     status.totalSkippedMiles = status.skippedMiles.reduce(function(sum, [start, end]) {
         start = Math.min(start, status.mileMarker);
         end = Math.min(end, status.mileMarker);
         return sum + end - start;
     }, 0);
 
-    status.miles = status.mileMarker - status.totalSkippedMiles;
-    status.milesSinceLastSeen = Math.floor(daysSinceSeen * status.dailyMileEstimate);
-    status.mileMarkerEstimate = status.mileMarker + status.milesSinceLastSeen;
+    let lastHiked = status.offTrailSince || TODAY - DAY;
+    let daysSinceSeen = Math.max(0, (lastHiked - status.lastSeen) / DAY);
+
+    status.milesHiked = status.mileMarker - status.totalSkippedMiles;
+    status.milesHikedSinceLastSeen = Math.floor(daysSinceSeen * status.dailyMileEstimate);
+    status.mileMarkerEstimate = status.mileMarker + status.milesHikedSinceLastSeen;
 
     return status;
 }
 
+
+// helpers: svg
 function createSVGElement(tagName, attributes = {}) {
     let el = document.createElementNS(SVG_NS, tagName);
     for (let key in attributes) {
@@ -50,200 +55,219 @@ function createSVGElement(tagName, attributes = {}) {
     return el;
 }
 
-const PCT_MILES = 2653;
-const trailPath = document.getElementById('trail-path');
-const trailProgress = document.getElementById('trail-progress');
-const trailMask = document.getElementById('trail-progress-mask');
-const trailMaskPath = document.getElementById('trail-mask-path');
-const trailMaskEnd = document.getElementById('trail-mask-end');
-const trailMaskEndPulse = document.getElementById('trail-mask-end-pulse');
-
-function scaleToRange(n, scale = [], range = []) {
-    const [start=0, end=1] = scale;
-    const [min=0, max=1] = range;
-    const perc = Math.max(0, Math.min((n - start) / (end - start), 1));
-
-    return min + (perc * (max - min));
-}
-
-function pointAtMile(mile=0) {
-    let percentOfTrail = mile / PCT_MILES;
-    let adjustmentMultiplier = scaleToRange(percentOfTrail, [0.38, 1], [1.04, 1]);
-    let percentOfTrailAdjusted = percentOfTrail * adjustmentMultiplier;
-
-    let pathLength = trailPath.getTotalLength();
-    let point = trailPath.getPointAtLength(pathLength * percentOfTrailAdjusted);
-
-    return point;
-}
-
-function pointsFromMiles(start, end, increment = 4) {
-    let points = [];
-
-    for (let mi = start; mi < end; mi += increment) {
-        const point = pointAtMile(mi);
-        points.push(point);
-    }
-
-    points.push(pointAtMile(end));
-
-    return points;
-}
-
-function pathFromPoints(points) {
-    return points.map(p => `${p.x},${p.y}`).join(' ');
-}
-
-function setTrailMask(miles, lastState) {
-    lastState = lastState || {miles: 0, points: []};
-
-    let lastMiles = lastState.miles;
-    let newPoints = pointsFromMiles(lastMiles, miles);
-    let points = lastState.points.concat(newPoints);
-
-    let pointsString = pathFromPoints(points);
-    let lastPoint = points[points.length - 1];
-
-    trailMaskPath.setAttributeNS(null, 'points', pointsString);
-    trailMaskEnd.setAttributeNS(null, 'cx', lastPoint.x);
-    trailMaskEnd.setAttributeNS(null, 'cy', lastPoint.y);
-    trailMaskEndPulse.setAttributeNS(null, 'cx', lastPoint.x);
-    trailMaskEndPulse.setAttributeNS(null, 'cy', lastPoint.y);
-
-    return {
-        points,
-        miles
-    };
-}
-
-function markSkippedMiles(start, end) {
-    let points = pointsFromMiles(start, end);
-    let path = pathFromPoints(points);
-    let polyline = createSVGElement('polyline', {
-        points: path,
-        fill: 'none',
-        stroke: '#dbab94',
-        style: 'stroke-width: 7px; stroke-linejoin: round; stroke-linecap: round;'
+function createTrailSectionElement(containerEl, {startMile, endMile, skipped} = section) {
+    const progress = createSVGElement('polyline', {
+        class: skipped ? 'trail-progress-skipped' : 'trail-progress-hiked',
+        points: ''
     });
 
-    let firstPoint = points[0];
-    let lastPoint = points[points.length - 1];
+    if (skipped) {
+        progress.innerHTML = `<title>Skipped miles ${startMile} - ${endMile}</title>`;
+        containerEl.appendChild(progress);
+    } else {
 
-    polyline.innerHTML = `<title>Skipped mile ${start} - ${end}</title>`;
-
-    trailProgress.appendChild(polyline);
-}
-
-const status = getStatus();
-const elements = {
-    miles: document.querySelector('.status-value.miles'),
-    days: document.querySelector('.status-value.days'),
-    checkpoint: document.querySelector('.status-value.checkpoint'),
-    statusNote: document.querySelector('.status-value.status-note'),
-    lastUpdate: document.querySelector('.info-last-update')
-};
-
-// days
-elements.days.dataset.value = status.daysOnTrail.toString();
-elements.days.setAttribute('title', `${status.daysOnTrail} on trail (start date: ${status.startDate})`);
-
-// miles
-elements.miles.dataset.value = status.miles.toLocaleString();
-
-let milesTitle = `${status.miles} miles hiked since ${status.startDate}`;
-
-if (status.milesSinceLastSeen > 0) {
-    elements.miles.dataset.prefix = '~';
-    elements.miles.dataset.value = (status.miles + status.milesSinceLastSeen).toLocaleString();
-    milesTitle = `${status.miles} miles + ~${status.milesSinceLastSeen.toLocaleString()} miles since ${status.lastSeen}`;
-}
-
-elements.miles.setAttribute('title', milesTitle);
-
-// checkpoint
-let checkpointName = 'PCT';
-let nextCheckpointName;
-let nextCheckpointMile;
-
-for (let [mile, name] of CHECKPOINTS) {
-    if (status.mileMarkerEstimate > mile) {
-        checkpointName = name;
-    } else if (!nextCheckpointName) {
-        nextCheckpointName = name;
-        nextCheckpointMile = mile;
+        containerEl.insertBefore(progress, containerEl.firstChild);
     }
+    return progress;
 }
 
-elements.checkpoint.dataset.value = checkpointName;
 
-if (nextCheckpointName) {
-    elements.statusNote.dataset.value = `${nextCheckpointMile - status.mileMarkerEstimate} mi to ${nextCheckpointName}`;
+// helpers: trail path
+function getPointIndex(points, mile, roundUp) {
+    const MILES_PER_POINT = PCT_MILES / points.length;
+    const pointIndex = Math.min(mile / MILES_PER_POINT, points.length - 1);
+    return roundUp ? Math.ceil(pointIndex) : Math.floor(pointIndex);
 }
 
-// info
-// leave as "Today" if lastSeen is set in the future
-let lastSeenString = status.lastSeen;
-let lastSeenDate = new Date(status.lastSeen);
-const YESTERDAY = new Date(TODAY - DAY);
+function getTrailSectionsUntilMile(miles, points, skippedMiles) {
 
-if (lastSeenDate > YESTERDAY) {
-    lastSeenString = 'Today';
-} else if (lastSeenDate >= YESTERDAY) {
-    lastSeenString = 'Yesterday';
-} else if ('Intl' in window) {
-    let formatter = new Intl.DateTimeFormat('en-US', {dateStyle: 'medium'});
-    if (lastSeenDate > TODAY - (DAY * 7)) {
-        formatter = new Intl.DateTimeFormat('en-US', {weekday: 'long'});
+    const addSection = (startMile, endMile, skipped) => {
+        sections.push({
+            startIndex: getPointIndex(points, startMile),
+            endIndex: getPointIndex(points, endMile, true),
+            startMile,
+            endMile,
+            skipped
+        });
+    };
+
+    const sections = [];
+
+    addSection(0, miles, false);
+
+    for (let [skipStart, skipEnd] of skippedMiles) {
+
+        if (miles < skipStart) {
+            break;
+        }
+
+        // add skipped section
+        addSection(skipStart, skipEnd, true);
     }
-    lastSeenString = formatter.format(lastSeenDate);
+
+    return sections;
 }
-elements.lastUpdate.dataset.lastUpdate = lastSeenString;
+
 
 // render
-for (let [start, end] of status.skippedMiles) {
-    markSkippedMiles(start, end);
+function animate(state) {
+    if (!state.start) {
+        state.start = Date.now();
+        state.fromIndex = 0;
+
+        if (state.delay) {
+            setTimeout(() => animate(state), state.delay);
+            return;
+        }
+    }
+
+    const progressPerc = Math.min((Date.now() - state.start) / state.duration, 1);
+    const progressEased = state.ease(progressPerc);
+    let toIndex = Math.floor(progressEased * state.points.length);
+    let done = false;
+
+    if (toIndex >= state.points.length) {
+        toIndex = state.points.length - 1;
+        done = true;
+    }
+
+    for (let s = 0; s < state.sections.length; s += 1) {
+        const section = state.sections[s];
+        section.fromIndex = section.fromIndex || section.startIndex;
+
+        if (section.fromIndex < toIndex && toIndex < section.endIndex) {
+            let toIndexForSection = Math.min(section.endIndex, toIndex);
+            for (let i = section.fromIndex; i <= toIndexForSection; i += 1) {
+                section.el.points.appendItem(state.points[i]);
+            }
+            section.fromIndex = toIndexForSection;
+        }
+    }
+
+    state.fromIndex = toIndex;
+
+    if (!done) {
+        requestAnimationFrame(() => {
+            animate(state);
+        });
+    }
 }
 
-const startMiles = 0;
-const endMiles = status.mileMarkerEstimate;
-const animateMiles = endMiles - startMiles;
-const duration = Math.floor(animateMiles * 3.5);
-let start;
+function animateTrailProgress(status, elements) {
+    const trailPoints = Array.from(elements.originalPath.points);
+    const milesToAnimate = status.mileMarkerEstimate;
+    const duration = milesToAnimate * MS_PER_MILE;
+    const delay = 300;
+    const sections = getTrailSectionsUntilMile(milesToAnimate, trailPoints, status.skippedMiles);
+    const lastIndex = getPointIndex(trailPoints, milesToAnimate);
+    const points = trailPoints.slice(0, lastIndex);
 
-function animate(fromState) {
-    if (!start) {
-        start = Date.now();
-    }
+    sections.forEach(section => {
+        section.el = createTrailSectionElement(elements.progressContainer, section);
+    });
 
-    function ease(x) {
-        return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-    }
+    animate({
+        points,
+        sections,
+        duration,
+        delay,
+        ease: x => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2)
+    });
 
-    requestAnimationFrame(() => {
-        let now = Date.now();
-        let timeProgress = Math.min(1, (now - start) / duration);
-        let animProgress = ease(timeProgress);
-        let miles = startMiles + (animateMiles * animProgress);
+    const lastPoint = trailPoints[lastIndex];
+    const begin = `${duration + delay}ms`;
 
-        let maskState = setTrailMask(miles, fromState);
-
-        if (animProgress < 1) {
-            animate(maskState);
-        } else {
-            setTrailMask(endMiles, fromState);
-        }
+    Array.from(elements.beginOnAnimationEnd).forEach(pathEl => {
+        Array.from(pathEl.children).forEach(el => {
+            const attributeName = el.getAttributeNS(null, 'attributeName');
+            if (el.tagName === 'set') {
+                if (attributeName === 'cx') {
+                    el.setAttribute('to', lastPoint.x);
+                } else if (attributeName === 'cy') {
+                    el.setAttribute('to', lastPoint.y);
+                }
+            }
+            el.setAttributeNS(null, 'begin', begin);
+        });
     });
 }
 
-// set svg animation timings
-const animationDuration = `${Math.ceil(duration / 1e3)}s`;
-trailMaskEnd.firstElementChild.setAttribute('begin', animationDuration);
-Array.from(trailMaskEndPulse.children).forEach(animate => {
-    animate.setAttribute('begin', animationDuration);
-});
+function renderStatus(status, elements) {
+    const WEEK = DAY * 7;
+    const YESTERDAY = new Date(TODAY - DAY);
+    const dateFormat = ('Intl' in window) ? date => {
+        const dtOptions = date > TODAY - WEEK ? {weekday: 'long'} : {dateStyle: 'medium'};
+        const dt = Intl.DateTimeFormat('en-US', dtOptions);
 
-// animation trail
-setTrailMask(0);
-setTimeout(() => {
-    animate();
-}, 300);
+        return dt.format(date);
+    } : d => d.toDateString();
+
+    // days
+    elements.daysOnTrail.dataset.value = status.daysOnTrail.toString();
+    elements.daysOnTrail.setAttribute('title', `${dateFormat(status.daysOnTrail)} on trail (start date: ${dateFormat(status.startDate)})`);
+
+    // miles
+    elements.milesHiked.dataset.value = status.milesHiked.toLocaleString();
+
+    let milesTitle = `${status.milesHiked} miles hiked since ${dateFormat(status.startDate)}`;
+
+    if (status.milesHikedSinceLastSeen > 0) {
+        elements.milesHiked.dataset.prefix = '~';
+        elements.milesHiked.dataset.value = (status.milesHiked + status.milesHikedSinceLastSeen).toLocaleString();
+        milesTitle = `${status.milesHiked} miles + ~${status.milesHikedSinceLastSeen.toLocaleString()} miles since ${dateFormat(status.lastSeen)}`;
+    }
+
+    elements.milesHiked.setAttribute('title', milesTitle);
+
+    // checkpoint
+    let checkpointName = 'PCT';
+    let nextCheckpointName;
+    let nextCheckpointMile;
+
+    for (let [mile, name] of status.checkpoints) {
+        if (status.mileMarkerEstimate > mile) {
+            checkpointName = name;
+        } else if (!nextCheckpointName) {
+            nextCheckpointName = name;
+            nextCheckpointMile = mile;
+        }
+    }
+
+    elements.checkpoint.dataset.value = checkpointName;
+
+    if (nextCheckpointName) {
+        elements.checkpointNote.dataset.value = `${nextCheckpointMile - status.mileMarkerEstimate} mi to ${nextCheckpointName}`;
+    }
+
+    // info
+    let lastSeenString;
+
+    if (status.lastSeen > YESTERDAY) {
+        lastSeenString = 'Today';
+    } else if (status.lastSeen >= YESTERDAY) {
+        lastSeenString = 'Yesterday';
+    } else {
+        lastSeenString = dateFormat(status.lastSeen);
+    }
+
+    elements.lastUpdate.dataset.lastUpdate = lastSeenString;
+    elements.startDate.dataset.startDate = dateFormat(status.startDate);
+}
+
+
+// render
+const status = getStatus();
+
+renderStatus(status, {
+    milesHiked: document.querySelector('.status-value.miles'),
+    daysOnTrail: document.querySelector('.status-value.days'),
+    checkpoint: document.querySelector('.status-value.checkpoint'),
+    checkpointNote: document.querySelector('.status-value.checkpoint-note'),
+    startDate: document.querySelector('.info-start-date'),
+    lastUpdate: document.querySelector('.info-last-update')
+});
+animateTrailProgress(status, {
+    originalPath: document.getElementById('trail-path'),
+    progressContainer: document.getElementById('trail-progress'),
+    beginOnAnimationEnd: document.getElementsByClassName('begin-on-animation-end')
+});

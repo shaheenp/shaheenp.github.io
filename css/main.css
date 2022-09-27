@@ -27,6 +27,7 @@ body {
     height: 100%;
     background-image: linear-gradient(90deg, #83aac4 50%, #d4d7d8 50%);
 }
+
 #pctmap {
     position: relative;
     position: absolute;
@@ -36,27 +37,56 @@ body {
     min-height: 400px;
 }
 
+.trail-progress-hiked,
+.trail-progress-skipped {
+    fill: none;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.trail-progress-hiked {
+    stroke: #e16220;
+    stroke-width: 12px;
+}
+
+.trail-progress-skipped {
+    stroke: #c6b3a9;
+    stroke-width: 6px;
+}
+
 #pctmap-status {
     position: absolute;
     left: calc( 45% + 60px );
     top: 10%;
-    background: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.02), 0 0 5px rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
     color: #555;
     display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 
-.header {
+.status,
+.legend {
+    background: #fff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.02), 0 0 5px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.status > :first-child {
+    border-radius: 10px 10px 0 0;
+}
+
+.status > :last-child {
+    border-radius: 0 0 10px 10px;
+}
+
+.status-header {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
     border-bottom: 1px solid #ddd;
     text-align: center;
-    padding: 0.8rem 1.25rem;
-    background: #0001;
-    border-radius: 10px 10px 0 0;
+    padding: 0.8rem 1.75rem;
+    background: #eee;
 }
 
 .header-title {
@@ -73,25 +103,25 @@ body {
     color: #888;
 }
 
-.status {
+.status-main {
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
     gap: 1.5rem;
 }
 
-.status-header {
-    flex-grow: 0;
-    display: flex;
-    justify-content: space-between;
-    gap: 2.5rem;
-}
-
-.status-main {
+.status-checkpoint {
     text-align: center;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
+}
+
+.status-values {
+    flex-grow: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 2.5rem;
 }
 
 .status-value {
@@ -133,25 +163,25 @@ body {
     font-size: 1.5rem;
 }
 
-.status-value.status-note {
+.status-value.checkpoint-note {
     font-size: 0.75rem;
     letter-spacing: 0.1px;
     color: #999;
 }
 
 .legend {
-    flex-grow: 1;
+    flex-grow: 0;
+    flex-basis: 0px;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.6rem;
-    background: #0001;
-    border-top: 1px solid #ddd;
+    background: #eee;
     color: #888;
     font-size: 0.75rem;
     text-align: center;
     padding: 0.625rem 1rem;
-    border-radius: 0 0 10px 10px;
+    border-radius: 10px 10px;
 }
 
 .legend-item {
@@ -165,7 +195,7 @@ body {
     box-sizing: border-box;
     content: '';
     width: 20px;
-    height: 6px;
+    height: 7px;
     margin-right: 5px;
     border-radius: 5px;
     vertical-align: middle;
@@ -182,7 +212,7 @@ body {
 
 .legend-item.skipped-miles:before {
     border: 1.5px solid #e16220;
-    background: #eea27f;
+    background: #c6b3a9;
 }
 
 
@@ -206,6 +236,10 @@ body {
     content: attr(data-last-update);
 }
 
+.info-start-date:after {
+    content: attr(data-start-date);
+}
+
 @media (min-width: 800px) {
     :root {
         font-size: 20px;
@@ -216,27 +250,25 @@ body {
     #pctmap-status {
         left: unset;
         right: 0;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
     }
 
-    .header {
-        border-top-right-radius: 0;
-    }
-
-    .legend {
-        border-bottom-right-radius: 0;
-    }
-
-    .header,
     .status,
     .legend {
-        padding-right: 2rem;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .status > :first-child {
+        border-top-right-radius: 0;
+    }
+
+    .status > :last-child {
+        border-bottom-right-radius: 0;
     }
 }
 
 @media (max-width: 460px) {
-    .status-header {
+    .status-values {
         flex-direction: column;
         justify-content: center;
         gap: 1.25rem;
