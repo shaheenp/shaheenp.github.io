@@ -135,7 +135,7 @@ function animate(state) {
         const section = state.sections[s];
         section.fromIndex = section.fromIndex || section.startIndex;
 
-        if (section.fromIndex < toIndex && toIndex < section.endIndex) {
+        if (section.fromIndex < toIndex) {
             let toIndexForSection = Math.min(section.endIndex, toIndex);
             for (let i = section.fromIndex; i <= toIndexForSection; i += 1) {
                 section.el.points.appendItem(state.points[i]);

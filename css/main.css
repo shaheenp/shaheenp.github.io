@@ -251,7 +251,6 @@ body {
     #pctmap-status {
         left: unset;
         right: 0;
-        top: 5%;
     }
 
     .status {
@@ -290,7 +289,7 @@ body {
     }
 }
 
-@media (max-width: 380px), (max-height: 600px) {
+@media (max-width: 380px) {
     :root {
         font-size: 14px;
     }
@@ -305,5 +304,28 @@ body {
 
     .header-title.small {
         display: block;
+    }
+}
+
+@media (max-height: 600px) {
+    :root {
+        font-size: 15px;
+    }
+
+    #pctmap-status {
+        top: 5%;
+    }
+
+    .status-header {
+        padding: 0.75rem 1.5rem;
+    }
+
+    .status-main {
+        padding: 1rem;
+    }
+
+    .status-main,
+    .status-values {
+        gap: 1rem;
     }
 }
