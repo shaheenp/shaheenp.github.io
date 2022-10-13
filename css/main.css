@@ -42,6 +42,7 @@ body {
     fill: none;
     stroke-linejoin: round;
     stroke-linecap: round;
+    filter: drop-shadow(0 0 10px #0002);
 }
 
 .trail-progress-hiked {
@@ -49,9 +50,16 @@ body {
     stroke-width: 12px;
 }
 
+.trail-progress-hiked.estimated {
+    /* */
+}
+
 .trail-progress-skipped {
-    stroke: #c6b3a9;
-    stroke-width: 6px;
+    stroke: #fff8;
+    stroke-width: 14px;
+    fill: none;
+    stroke-linejoin: round;
+    stroke-linecap: round;
 }
 
 #pctmap-status {
@@ -61,37 +69,40 @@ body {
     color: #555;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.5rem;
 }
 
-.status,
-.legend {
+.status-title,
+.status {
     background: #fff;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.02), 0 0 5px rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
+    border-radius: 0.75rem;
 }
 
 .status > :first-child {
-    border-radius: 10px 10px 0 0;
+    border-radius: inherit;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .status > :last-child {
-    border-radius: 0 0 10px 10px;
+    border-radius: inherit;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
-.status-header {
+.status-title {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    border-bottom: 1px solid #ddd;
+    gap: 0.5rem;
     text-align: center;
-    padding: 0.8rem 1.75rem;
-    background: #eee;
+    padding: 0.5rem 1.5rem;
+    letter-spacing: 0.01rem;
 }
 
 .header-title {
     font-size: 1rem;
-    color: #666;
+    color: #444;
 }
 
 .header-title.small {
@@ -100,7 +111,23 @@ body {
 
 .header-subtitle {
     font-size: 0.8rem;
-    color: #888;
+    color: #777;
+}
+
+.status-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    /* border-bottom: 1px solid #ddd; */
+    text-align: center;
+    padding: 0.8rem 1.75rem;
+    background: #eee;
+    letter-spacing: 0.01rem;
+}
+
+.status-header .header-title {
+    font-size: 0.9rem;
+    color: #666;
 }
 
 .status-main {
@@ -169,54 +196,6 @@ body {
     color: #999;
 }
 
-.legend {
-    flex-grow: 0;
-    flex-basis: 0px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    background: #eee;
-    color: #888;
-    font-size: 0.75rem;
-    text-align: center;
-    padding: 0.625rem 1rem;
-    border-radius: 10px;
-    align-self: center;
-}
-
-.legend-item {
-    flex-basis: 20%;
-    line-height: 0.75rem;
-    white-space: nowrap;
-}
-
-.legend-item:before {
-    display: inline-block;
-    box-sizing: border-box;
-    content: '';
-    width: 20px;
-    height: 7px;
-    margin-right: 5px;
-    border-radius: 5px;
-    vertical-align: middle;
-}
-
-.legend-item:after {
-    content: attr(data-label);
-    vertical-align: middle;
-}
-
-.legend-item.hiked-miles:before {
-    background: #e16220;
-}
-
-.legend-item.skipped-miles:before {
-    border: 1.5px solid #e16220;
-    background: #c6b3a9;
-}
-
-
 .info {
     display: block;
     position: absolute;
@@ -253,6 +232,7 @@ body {
         right: 0;
     }
 
+    .status-title,
     .status {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
@@ -298,12 +278,16 @@ body {
         display: none;
     }
 
+    .header-title.small {
+        display: block;
+    }
+
     .header-subtitle {
         display: none;
     }
 
-    .header-title.small {
-        display: block;
+    .status-title {
+        display: none;
     }
 }
 
@@ -313,7 +297,7 @@ body {
     }
 
     #pctmap-status {
-        top: 5%;
+        top: 7%;
     }
 
     .status-header {

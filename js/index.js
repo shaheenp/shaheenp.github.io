@@ -7,6 +7,11 @@ const TODAY = new Date(new Date().toDateString());
 const PCT_MILES = 2653;
 const MS_PER_MILE = 3.5;
 
+// constants/trail path
+const TRAIL_TYPE_HIKED = 'hiked';
+const TRAIL_TYPE_SKIPPED = 'skipped';
+const TRAIL_TYPE_ESTIMATED = 'estimated';
+
 
 // status
 function getStatus() {
@@ -40,6 +45,7 @@ function getStatus() {
 
     status.milesHiked = status.mileMarker - status.totalSkippedMiles;
     status.milesHikedSinceLastSeen = Math.floor(daysSinceSeen * status.dailyMileEstimate);
+    status.milesHikedEstimate = status.milesHiked + status.milesHikedSinceLastSeen;
     status.mileMarkerEstimate = status.mileMarker + status.milesHikedSinceLastSeen;
 
     return status;
@@ -55,19 +61,38 @@ function createSVGElement(tagName, attributes = {}) {
     return el;
 }
 
-function createTrailSectionElement(containerEl, {startMile, endMile, skipped} = section) {
-    const progress = createSVGElement('polyline', {
-        class: skipped ? 'trail-progress-skipped' : 'trail-progress-hiked',
-        points: ''
-    });
+function getTrailSectionClassName(sectionType) {
+    let classList = [];
 
-    if (skipped) {
-        progress.innerHTML = `<title>Skipped miles ${startMile} - ${endMile}</title>`;
-        containerEl.appendChild(progress);
-    } else {
-
-        containerEl.insertBefore(progress, containerEl.firstChild);
+    switch (sectionType) {
+        case TRAIL_TYPE_SKIPPED:
+            classList.push('trail-progress-skipped');
+            break;
+        case TRAIL_TYPE_ESTIMATED:
+            classList.push('estimated');
+        case TRAIL_TYPE_HIKED:
+        default:
+            classList.push('trail-progress-hiked');
+            break;
     }
+
+    return classList.join(' ');
+}
+
+function createTrailSectionElement(trailPathEl, {startMile, endMile, type} = section) {
+    const progress = createSVGElement('polyline', {
+        points: '',
+        class: getTrailSectionClassName(type)
+    });
+    let position = 'afterend';
+
+    if (type === TRAIL_TYPE_SKIPPED) {
+        position = 'beforebegin';
+        progress.innerHTML = `<title>Skipped miles ${startMile} - ${endMile}</title>`;
+    }
+
+    trailPathEl.insertAdjacentElement(position, progress);
+
     return progress;
 }
 
@@ -79,106 +104,127 @@ function getPointIndex(points, mile, roundUp) {
     return roundUp ? Math.ceil(pointIndex) : Math.floor(pointIndex);
 }
 
-function getTrailSectionsUntilMile(miles, points, skippedMiles) {
-
-    const addSection = (startMile, endMile, skipped) => {
+function getTrailSectionsUntilMile(miles, milesEstimate, points, skippedMiles) {
+    const addSection = (startMile, endMile, type) => {
         sections.push({
             startIndex: getPointIndex(points, startMile),
             endIndex: getPointIndex(points, endMile, true),
             startMile,
             endMile,
-            skipped
+            type
         });
     };
 
     const sections = [];
+    let prevSkipEnd = 0;
 
-    addSection(0, miles, false);
-
-    for (let [skipStart, skipEnd] of skippedMiles) {
+    for (const skip of skippedMiles) {
+        const [skipStart, skipEnd] = skip;
 
         if (miles < skipStart) {
             break;
         }
 
+        // add hiked section
+        if (prevSkipEnd < skipStart) {
+            addSection(prevSkipEnd, skipStart, TRAIL_TYPE_HIKED);
+        }
+
         // add skipped section
-        addSection(skipStart, skipEnd, true);
+        addSection(skipStart, skipEnd, TRAIL_TYPE_SKIPPED);
+
+        prevSkipEnd = skipEnd;
     }
+
+    if (prevSkipEnd < miles) {
+        addSection(prevSkipEnd, miles, TRAIL_TYPE_HIKED);
+    }
+
+    addSection(miles, milesEstimate, TRAIL_TYPE_ESTIMATED);
 
     return sections;
 }
 
 
 // render
-function animate(state) {
+function animate(state, calcIndex, whenDone) {
     if (!state.start) {
         state.start = Date.now();
-        state.fromIndex = 0;
-
-        if (state.delay) {
-            setTimeout(() => animate(state), state.delay);
-            return;
-        }
     }
 
-    const progressPerc = Math.min((Date.now() - state.start) / state.duration, 1);
-    const progressEased = state.ease(progressPerc);
-    let toIndex = Math.floor(progressEased * state.points.length);
-    let done = false;
-
-    if (toIndex >= state.points.length) {
-        toIndex = state.points.length - 1;
-        done = true;
-    }
+    const toIndex = calcIndex(Date.now() - state.start);
 
     for (let s = 0; s < state.sections.length; s += 1) {
         const section = state.sections[s];
+
+        if (toIndex < section.startIndex) {
+            continue;
+        }
+
         section.fromIndex = section.fromIndex || section.startIndex;
 
-        if (section.fromIndex < toIndex) {
-            let toIndexForSection = Math.min(section.endIndex, toIndex);
-            for (let i = section.fromIndex; i <= toIndexForSection; i += 1) {
-                section.el.points.appendItem(state.points[i]);
+        if (section.fromIndex < toIndex && section.fromIndex < section.endIndex) {
+            const sectionToIndex = Math.min(section.endIndex, toIndex);
+
+            for (let i = section.fromIndex; i <= sectionToIndex; i += 1) {
+                try {
+                    section.el.points.appendItem(state.points[i]);
+                } catch (error) {
+                    console.error(`Out of Range: failed to render points[${i}] (section.endIndex=${section.endIndex}, toIndex=${toIndex})`);
+                }
             }
-            section.fromIndex = toIndexForSection;
+
+            section.fromIndex = sectionToIndex;
         }
     }
 
-    state.fromIndex = toIndex;
-
-    if (!done) {
+    if (toIndex < state.points.length - 1) {
         requestAnimationFrame(() => {
-            animate(state);
+            animate(state, calcIndex, whenDone);
         });
+    } else {
+        whenDone();
+    }
+}
+
+function makeIndexCalculator(duration, points, sections) {
+    const ease = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+
+    return timeElapsed => {
+        const progress = ease(Math.min(timeElapsed, duration) / duration);
+        const index = Math.floor(progress * (points.length - 1));
+
+        return index;
     }
 }
 
 function animateTrailProgress(status, elements) {
     const trailPoints = Array.from(elements.originalPath.points);
-    const milesToAnimate = status.mileMarkerEstimate;
+    const startMile = 0;
+    const endMile = status.mileMarkerEstimate;
+    const milesToAnimate = endMile - startMile;
     const duration = milesToAnimate * MS_PER_MILE;
     const delay = 300;
-    const sections = getTrailSectionsUntilMile(milesToAnimate, trailPoints, status.skippedMiles);
-    const lastIndex = getPointIndex(trailPoints, milesToAnimate);
+    const sections = getTrailSectionsUntilMile(status.mileMarker, endMile, trailPoints, status.skippedMiles);
+    const lastIndex = getPointIndex(trailPoints, endMile, true);
     const points = trailPoints.slice(0, lastIndex);
 
     sections.forEach(section => {
-        section.el = createTrailSectionElement(elements.progressContainer, section);
+        section.el = createTrailSectionElement(elements.originalPath, section);
     });
 
-    animate({
-        points,
-        sections,
-        duration,
-        delay,
-        ease: x => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2)
-    });
+    setTimeout(() => {
+        const indexCalculator = makeIndexCalculator(duration, points, sections);
 
-    const lastPoint = trailPoints[lastIndex];
-    const begin = `${duration + delay}ms`;
+        animate({ points, sections }, indexCalculator, () => {
+            animateTrailPoint(elements.trailPoints, trailPoints[lastIndex]);
+        });
+    }, delay);
+}
 
-    Array.from(elements.beginOnAnimationEnd).forEach(pathEl => {
-        Array.from(pathEl.children).forEach(el => {
+function animateTrailPoint(trailPoints, lastPoint) {
+    Array.from(trailPoints).forEach(pointEl => {
+        Array.from(pointEl.children).forEach(el => {
             const attributeName = el.getAttributeNS(null, 'attributeName');
             if (el.tagName === 'set') {
                 if (attributeName === 'cx') {
@@ -187,7 +233,7 @@ function animateTrailProgress(status, elements) {
                     el.setAttribute('to', lastPoint.y);
                 }
             }
-            el.setAttributeNS(null, 'begin', begin);
+            el.beginElement();
         });
     });
 }
@@ -267,7 +313,7 @@ renderStatus(status, {
     lastUpdate: document.querySelector('.info-last-update')
 });
 animateTrailProgress(status, {
+    svgRoot: document.getElementById('pctmap'),
     originalPath: document.getElementById('trail-path'),
-    progressContainer: document.getElementById('trail-progress'),
-    beginOnAnimationEnd: document.getElementsByClassName('begin-on-animation-end')
+    trailPoints: document.getElementsByClassName('begin-on-animation-end')
 });
