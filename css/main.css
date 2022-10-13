@@ -72,26 +72,25 @@ body {
     gap: 0.5rem;
 }
 
-.status-title,
-.status {
+.status-section {
     background: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.02), 0 0 5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.02), 0 0 5px rgba(0, 0, 0, 0.1);
     border-radius: 0.75rem;
 }
 
-.status > :first-child {
+.status-section > :first-child {
     border-radius: inherit;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-.status > :last-child {
+.status-section > :last-child {
     border-radius: inherit;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
 
-.status-title {
+.status-floater {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -103,10 +102,6 @@ body {
 .header-title {
     font-size: 1rem;
     color: #444;
-}
-
-.header-title.small {
-    display: none;
 }
 
 .header-subtitle {
@@ -137,13 +132,6 @@ body {
     gap: 1.5rem;
 }
 
-.status-checkpoint {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
 .status-values {
     flex-grow: 0;
     display: flex;
@@ -156,6 +144,7 @@ body {
     font-size: 1.2rem;
     margin: 0;
     text-align: center;
+    flex-grow: 1;
 }
 
 .status-value[data-label]:after {
@@ -186,14 +175,16 @@ body {
     color: #e16220;
 }
 
+.status-value.miles-left {
+    color: #87a395;
+}
+
 .status-value.checkpoint {
     font-size: 1.5rem;
 }
 
-.status-value.checkpoint-note {
-    font-size: 0.75rem;
-    letter-spacing: 0.1px;
-    color: #999;
+.status-value.estimated-completion {
+    /* */
 }
 
 .info {
@@ -232,17 +223,16 @@ body {
         right: 0;
     }
 
-    .status-title,
-    .status {
+    .status-section {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
 
-    .status > :first-child {
+    .status-section > :first-child {
         border-top-right-radius: 0;
     }
 
-    .status > :last-child {
+    .status-section > :last-child {
         border-bottom-right-radius: 0;
     }
 
@@ -267,6 +257,10 @@ body {
     .status-value.checkpoint {
         font-size: 1.2rem;
     }
+
+    .hide-460 {
+        display: none;
+    }
 }
 
 @media (max-width: 380px) {
@@ -274,19 +268,7 @@ body {
         font-size: 14px;
     }
 
-    .header-title.large {
-        display: none;
-    }
-
-    .header-title.small {
-        display: block;
-    }
-
-    .header-subtitle {
-        display: none;
-    }
-
-    .status-title {
+    .hide-380 {
         display: none;
     }
 }
@@ -294,10 +276,6 @@ body {
 @media (max-height: 600px) {
     :root {
         font-size: 15px;
-    }
-
-    #pctmap-status {
-        top: 7%;
     }
 
     .status-header {
@@ -310,6 +288,6 @@ body {
 
     .status-main,
     .status-values {
-        gap: 1rem;
+        gap: 1.5rem;
     }
 }

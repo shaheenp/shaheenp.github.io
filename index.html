@@ -7,8 +7,8 @@
     <meta name="theme-color" content="#6395b6" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#6395b6" media="(prefers-color-scheme: dark)">
     <title>Shaheen Page - PCT 2022</title>
-    <link rel="stylesheet" href="/css/main.css?cache=13">
-    <script type="application/javascript" src="/js/index.js?cache=14" defer></script>
+    <link rel="stylesheet" href="/css/main.css?cache=14">
+    <script type="application/javascript" src="/js/index.js?cache=15" defer></script>
     <script id="status-data" type="application/json">
     {
         "startDate": "July 15, 2022",
@@ -214,24 +214,29 @@
             </circle>
         </svg>
         <section id="pctmap-status">
-            <header class="status-title">
+            <header class="status-section status-floater hide-460">
                 <span class="header-title">Pacific Crest Trail</span>
                 <span class="header-subtitle">Southbound - 2022</span>
             </header>
-            <div class="status">
+            <div class="status-section status-body">
                 <header class="status-header">
                     <span class="header-title">Where's Shaheen?</span>
                 </header>
                 <main class="status-main">
-                    <div class="status-checkpoint">
+                    <div class="status-values">
                         <span class="status-value checkpoint"></span>
-                        <span class="status-value checkpoint-note"></span>
                     </div>
                     <div class="status-values">
                         <span class="status-value miles" data-label="Hiked" data-suffix=" mi"></span>
-                        <span class="status-value days" data-label="On trail" data-suffix=" days"></span>
+                        <span class="status-value days hide-380" data-label="On trail" data-suffix=" days"></span>
                     </div>
                 </main>
+            </div>
+            <div class="status-section status-floater">
+                <span class="header-subtitle">Estimated Completion</span>
+                <div class="status-values">
+                    <span class="status-value estimated-completion"></span>
+                </div>
             </div>
         </section>
         <section class="info">

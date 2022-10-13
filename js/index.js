@@ -242,7 +242,8 @@ function renderStatus(status, elements) {
     const WEEK = DAY * 7;
     const YESTERDAY = new Date(TODAY - DAY);
     const dateFormat = ('Intl' in window) ? date => {
-        const dtOptions = date > TODAY - WEEK ? {weekday: 'long'} : {dateStyle: 'medium'};
+        const withinWeek = Math.abs(TODAY - date) < WEEK;
+        const dtOptions = withinWeek ? {weekday: 'long'} : {dateStyle: 'medium'};
         const dt = Intl.DateTimeFormat('en-US', dtOptions);
 
         return dt.format(date);
@@ -250,20 +251,31 @@ function renderStatus(status, elements) {
 
     // days
     elements.daysOnTrail.dataset.value = status.daysOnTrail.toString();
-    elements.daysOnTrail.setAttribute('title', `${dateFormat(status.daysOnTrail)} on trail (start date: ${dateFormat(status.startDate)})`);
+    elements.daysOnTrail.setAttribute('title', `${status.daysOnTrail} days on trail (start date: ${dateFormat(status.startDate)})`);
 
     // miles
     elements.milesHiked.dataset.value = status.milesHiked.toLocaleString();
 
-    let milesTitle = `${status.milesHiked} miles hiked since ${dateFormat(status.startDate)}`;
+    let milesTitle = `${status.milesHiked.toLocaleString()} miles hiked since ${dateFormat(status.startDate)}`;
 
     if (status.milesHikedSinceLastSeen > 0) {
         elements.milesHiked.dataset.prefix = '~';
         elements.milesHiked.dataset.value = (status.milesHiked + status.milesHikedSinceLastSeen).toLocaleString();
-        milesTitle = `${status.milesHiked} miles + ~${status.milesHikedSinceLastSeen.toLocaleString()} miles since ${dateFormat(status.lastSeen)}`;
+        milesTitle = `${status.milesHiked.toLocaleString()} miles + ~${status.milesHikedSinceLastSeen.toLocaleString()} miles since ${dateFormat(status.lastSeen)}`;
     }
 
     elements.milesHiked.setAttribute('title', milesTitle);
+
+    // estimated completion
+    const milesLeft = PCT_MILES - status.mileMarkerEstimate;
+    const daysLeft = Math.ceil(milesLeft / status.dailyMileEstimate);
+    const estimatedCompletion = dateFormat(Date.now() + (daysLeft * DAY));
+
+    if (milesLeft > 0) {
+        elements.estimatedCompletion.dataset.value = estimatedCompletion;
+    } else {
+        elements.estimatedCompletion.dataset.value = 'Complete!';
+    }
 
     // checkpoint
     let checkpointName = 'PCT';
@@ -282,7 +294,7 @@ function renderStatus(status, elements) {
     elements.checkpoint.dataset.value = checkpointName;
 
     if (nextCheckpointName) {
-        elements.checkpointNote.dataset.value = `${nextCheckpointMile - status.mileMarkerEstimate} mi to ${nextCheckpointName}`;
+        elements.checkpoint.dataset.label = `${nextCheckpointMile - status.mileMarkerEstimate} mi to ${nextCheckpointName}`;
     }
 
     // info
@@ -307,8 +319,8 @@ const status = getStatus();
 renderStatus(status, {
     milesHiked: document.querySelector('.status-value.miles'),
     daysOnTrail: document.querySelector('.status-value.days'),
+    estimatedCompletion: document.querySelector('.status-value.estimated-completion'),
     checkpoint: document.querySelector('.status-value.checkpoint'),
-    checkpointNote: document.querySelector('.status-value.checkpoint-note'),
     startDate: document.querySelector('.info-start-date'),
     lastUpdate: document.querySelector('.info-last-update')
 });
