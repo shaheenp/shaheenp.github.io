@@ -278,6 +278,10 @@ body {
         font-size: 15px;
     }
 
+    #pctmap-status {
+        top: 8%;
+    }
+
     .status-header {
         padding: 0.75rem 1.5rem;
     }
