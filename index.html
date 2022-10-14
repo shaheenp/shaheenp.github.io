@@ -1,3 +1,7 @@
+---
+---
+{% assign cachebust = site.time | date: "%s" | slice: 2, 6 %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +11,8 @@
     <meta name="theme-color" content="#6395b6" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#6395b6" media="(prefers-color-scheme: dark)">
     <title>Shaheen Page - PCT 2022</title>
-    <link rel="stylesheet" href="/css/main.css?cache=16">
-    <script type="application/javascript" src="/js/index.js?cache=15" defer></script>
+    <link rel="stylesheet" href="/css/main.css?cache={{ cachebust }}">
+    <script type="application/javascript" src="/js/index.js?cache={{ cachebust }}" defer></script>
     <script id="status-data" type="application/json">
     {
         "startDate": "July 15, 2022",
