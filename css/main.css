@@ -74,7 +74,7 @@ body {
 
 .status-section {
     background: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.02), 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.02), 0 0 10px rgba(0, 0, 0, 0.04), 0 0 5px rgba(0, 0, 0, 0.08);
     border-radius: 0.75rem;
 }
 
@@ -122,7 +122,7 @@ body {
 
 .status-header .header-title {
     font-size: 0.9rem;
-    color: #666;
+    color: #555;
 }
 
 .status-main {
@@ -185,6 +185,17 @@ body {
 
 .status-value.estimated-completion {
     /* */
+}
+
+@supports (backdrop-filter: blur(20px)) {
+    .status-section {
+        background: #fffa;
+        backdrop-filter: blur(20px);
+    }
+
+    .status-header {
+        background: #00000010;
+    }
 }
 
 .info {
