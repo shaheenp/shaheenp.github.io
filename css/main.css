@@ -187,9 +187,10 @@ body {
     /* */
 }
 
-@supports (backdrop-filter: blur(20px)) {
+@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
     .status-section {
         background: #fffa;
+        -webkit-backdrop-filter: blur(20px);
         backdrop-filter: blur(20px);
     }
 
