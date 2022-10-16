@@ -307,3 +307,13 @@ body {
         gap: 1.5rem;
     }
 }
+
+@media (max-height: 340px) {
+    :root {
+        font-size: 14px;
+    }
+
+    .hide-460 {
+        display: none;
+    }
+}
