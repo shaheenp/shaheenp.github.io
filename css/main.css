@@ -33,8 +33,7 @@ body {
     position: absolute;
     transform: translateX(-45%);
     left: 45%;
-    height: 108%;
-    min-height: 400px;
+    height: calc(108% - env(safe-area-inset-bottom, 0));
 }
 
 .trail-progress-hiked,
@@ -202,8 +201,8 @@ body {
 .info {
     display: block;
     position: absolute;
-    left: 16px;
-    bottom: 16px;
+    left: calc(16px + env(safe-area-inset-left, 0));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0));
     font-size: 14px;
     letter-spacing: 0.3px;
     color: #000;
