@@ -249,8 +249,8 @@ body {
 
     .info {
         font-size: 12px;
-        left: 12px;
-        bottom: 12px;
+        left: calc(12px + env(safe-area-inset-left, 0));
+        bottom: calc(12px + env(safe-area-inset-bottom, 0));
     }
 
     .info-item {
