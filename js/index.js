@@ -267,9 +267,9 @@ function renderStatus(status, elements) {
     elements.milesHiked.setAttribute('title', milesTitle);
 
     // estimated completion
-    const milesLeft = PCT_MILES - status.mileMarkerEstimate;
+    const milesLeft = PCT_MILES - status.milesHiked;
     const daysLeft = Math.ceil(milesLeft / status.dailyMileEstimate);
-    const estimatedCompletion = dateFormat(Date.now() + (daysLeft * DAY));
+    const estimatedCompletion = dateFormat(status.lastSeen.getTime() + (daysLeft * DAY));
 
     if (milesLeft > 0) {
         elements.estimatedCompletion.dataset.value = estimatedCompletion;
