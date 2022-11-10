@@ -4,7 +4,7 @@
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const DAY = 1000 * 60 * 60 * 24;
 const TODAY = new Date(new Date().toDateString());
-const PCT_MILES = 2653;
+const PCT_MILES = 2653.6;
 const MS_PER_MILE = 3.5;
 
 // constants/trail path
@@ -43,7 +43,7 @@ function getStatus() {
     let lastHiked = status.offTrailSince || TODAY - DAY;
     let daysSinceSeen = Math.max(0, (lastHiked - status.lastSeen) / DAY);
 
-    status.milesHiked = status.mileMarker - status.totalSkippedMiles;
+    status.milesHiked = Math.round(status.mileMarker - status.totalSkippedMiles);
     status.milesHikedSinceLastSeen = Math.floor(daysSinceSeen * status.dailyMileEstimate);
     status.milesHikedEstimate = status.milesHiked + status.milesHikedSinceLastSeen;
     status.mileMarkerEstimate = status.mileMarker + status.milesHikedSinceLastSeen;
@@ -269,7 +269,7 @@ function renderStatus(status, elements) {
     // estimated completion
     const milesLeft = PCT_MILES - status.mileMarker;
     const daysLeft = Math.ceil(milesLeft / status.dailyMileEstimate);
-    const estimatedCompletion = dateFormat(status.lastSeen.getTime() + DAY + (daysLeft * DAY));
+    const estimatedCompletion = dateFormat(status.lastSeen.getTime() + (daysLeft * DAY));
 
     if (milesLeft > 0) {
         elements.estimatedCompletion.dataset.value = estimatedCompletion;
@@ -294,7 +294,7 @@ function renderStatus(status, elements) {
     elements.checkpoint.dataset.value = checkpointName;
 
     if (nextCheckpointName) {
-        elements.checkpoint.dataset.label = `${nextCheckpointMile - status.mileMarkerEstimate} mi to ${nextCheckpointName}`;
+        elements.checkpoint.dataset.label = `${Math.round(nextCheckpointMile - status.mileMarkerEstimate)} mi to ${nextCheckpointName}`;
     }
 
     // info
