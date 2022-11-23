@@ -5,7 +5,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const DAY = 1000 * 60 * 60 * 24;
 const TODAY = new Date(new Date().toDateString());
 const PCT_MILES = 2653.6;
-const MS_PER_MILE = 3.5;
+const MS_PER_MILE = 2.5;
 
 // constants/trail path
 const TRAIL_TYPE_HIKED = 'hiked';
@@ -27,20 +27,22 @@ function getStatus() {
         "checkpoints": []
     }, JSON.parse(statusScript.innerHTML.trim()));
 
+    const isComplete = status.mileMarker >= PCT_MILES;
+
     // make Date's
     status.startDate = new Date(status.startDate);
     status.lastSeen = new Date(status.lastSeen);
     status.offTrailSince = status.offTrailSince && new Date(status.offTrailSince);
 
     // calc accessible values
-    status.daysOnTrail = Math.ceil((TODAY - status.startDate + 1) / DAY);
+    status.daysOnTrail = Math.ceil(((isComplete ? status.lastSeen : TODAY) - status.startDate + 1) / DAY);
     status.totalSkippedMiles = status.skippedMiles.reduce(function(sum, [start, end]) {
         start = Math.min(start, status.mileMarker);
         end = Math.min(end, status.mileMarker);
         return sum + end - start;
     }, 0);
 
-    let lastHiked = status.offTrailSince || TODAY - DAY;
+    let lastHiked = isComplete ? status.lastSeen : status.offTrailSince || TODAY - DAY;
     let daysSinceSeen = Math.max(0, (lastHiked - status.lastSeen) / DAY);
 
     status.milesHiked = Math.round(status.mileMarker - status.totalSkippedMiles);
